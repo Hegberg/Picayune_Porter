@@ -58,6 +58,7 @@ void Squad::update()
 		_rangedManager.regroup(regroupPosition);
         _tankManager.regroup(regroupPosition);
         _medicManager.regroup(regroupPosition);
+		//_marineManager.regroup(regroupPosition);
 	}
 	else // otherwise, execute micro
 	{
@@ -65,8 +66,9 @@ void Squad::update()
 		_rangedManager.execute(_order);
         _tankManager.execute(_order);
         _medicManager.execute(_order);
+		_marineManager.execute(_order);
 		_transportManager.update();
-
+		
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
 		_detectorManager.execute(_order);
 	}
@@ -145,6 +147,7 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset transportUnits;
     BWAPI::Unitset tankUnits;
     BWAPI::Unitset medicUnits;
+	BWAPI::Unitset marineUnits;
 
 	// add _units to micro managers
 	for (auto & unit : _units)
@@ -160,6 +163,10 @@ void Squad::addUnitsToMicroManagers()
             {
                 tankUnits.insert(unit);
             }   
+			else if (unit->getType() == BWAPI::UnitTypes::Terran_Marine)
+			{
+				marineUnits.insert(unit);
+			}
 			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
@@ -188,6 +195,7 @@ void Squad::addUnitsToMicroManagers()
 	_transportManager.setUnits(transportUnits);
     _tankManager.setUnits(tankUnits);
     _medicManager.setUnits(medicUnits);
+	_marineManager.setUnits(marineUnits);
 }
 
 // calculates whether or not to regroup

@@ -11,6 +11,7 @@
 #include "CombatSimulation.h"
 #include "TankManager.h"
 #include "MedicManager.h"
+#include "MarineManager.h"
 
 namespace Picayune_Porter
 {
@@ -31,6 +32,7 @@ class Squad
 	TransportManager    _transportManager;
     TankManager         _tankManager;
     MedicManager        _medicManager;
+	MarineManager		_marineManager;
 
 	std::map<BWAPI::Unit, bool>	_nearEnemy;
 
