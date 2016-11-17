@@ -8,7 +8,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 5,
+        "SetLocalSpeed"             : 10,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
@@ -18,7 +18,7 @@
     {
         "UseSparcraftSimulation"    : true,
         "KiteWithRangedUnits"       : true,
-        "KiteLongerRangedUnits"     : [ "Vulture"],
+        "KiteLongerRangedUnits"     : ["Bunker", "Vulture"],
         "WorkersDefendRush"         : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
@@ -64,7 +64,7 @@
     "Modules" :
     {
         "UseGameCommander"          : true,
-        "UseScoutManager"           : false,
+        "UseScoutManager"           : true,
         "UseCombatCommander"        : true,
         "UseBuildOrderSearch"       : true,
         "UseStrategyIO"             : true,
@@ -110,9 +110,14 @@
             "Zerg_2HatchHydra"      : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning Pool", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hydralisk Den", "Drone", "Overlord", "Drone", "Drone", "Drone", "Grooved_Spines", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hatchery", "Extractor" ] },
             "Zerg_3HatchMuta"       : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Hatchery"]},
             "Zerg_3HatchScourge"    : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Extractor", "Drone", "Hatchery", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Hatchery", "Extractor", "Extractor", "Hatchery"]},
-"Terran_Flash"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","Supply Depot","SCV", "SCV","SCV","Bunker","Marine",  "SCV",
 
- "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Refinery","SCV","SCV","SCV","Supply Depot","SCV"]}
+"Terran_Flash"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","SCV","Supply Depot", "SCV","SCV","Bunker","Marine",  "SCV",
+
+ "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Refinery","SCV","SCV","SCV","Supply Depot","SCV"]},
+
+"Terran_FlashvProtoss"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","SCV","Supply Depot", "SCV","SCV","Bunker","Marine",  "SCV",
+
+ "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Bunker", "Refinery","SCV","Marine","SCV","Marine","SCV","Marine","Supply Depot","SCV","Marine"]}
         }
     }
 }
