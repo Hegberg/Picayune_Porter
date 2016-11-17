@@ -8,8 +8,8 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 0,
-        "SetFrameSkip"              : 20,
+        "SetLocalSpeed"             : 5,
+        "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
     },
@@ -18,8 +18,8 @@
     {
         "UseSparcraftSimulation"    : true,
         "KiteWithRangedUnits"       : true,
-        "KiteLongerRangedUnits"     : ["Mutalisk", "Vulture"],
-        "WorkersDefendRush"         : true,
+        "KiteLongerRangedUnits"     : [ "Vulture"],
+        "WorkersDefendRush"         : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
         "InCombatRadius"            : 1000,
@@ -30,7 +30,7 @@
     "Macro" :
     {
         "BOSSFrameLimit"            : 160,
-        "WorkersPerRefinery"        : 2,
+        "WorkersPerRefinery"        : 3,
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
@@ -64,7 +64,7 @@
     "Modules" :
     {
         "UseGameCommander"          : true,
-        "UseScoutManager"           : true,
+        "UseScoutManager"           : false,
         "UseCombatCommander"        : true,
         "UseBuildOrderSearch"       : true,
         "UseStrategyIO"             : true,
@@ -82,7 +82,7 @@
         "Terran"                    : "Terran_Flash",
         
         "ScoutGasSteal"             : false,
-        "ScoutHarassEnemy"          : true,
+        "ScoutHarassEnemy"          : false,
         
         "ReadDirectory"             : "bwapi-data/read/",
         "WriteDirectory"            : "bwapi-data/write/",
@@ -110,7 +110,9 @@
             "Zerg_2HatchHydra"      : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Hatchery", "Spawning Pool", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hydralisk Den", "Drone", "Overlord", "Drone", "Drone", "Drone", "Grooved_Spines", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hydralisk","Hydralisk","Hydralisk","Hydralisk", "Hatchery", "Extractor" ] },
             "Zerg_3HatchMuta"       : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Mutalisk", "Hatchery"]},
             "Zerg_3HatchScourge"    : { "Race" : "Zerg",    "OpeningBuildOrder" : ["Drone", "Drone", "Drone", "Drone", "Overlord", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Drone", "Spawning_Pool", "Drone", "Drone", "Extractor", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone","Lair", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Spire", "Overlord", "Drone", "Overlord", "Hatchery", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Drone", "Hatchery", "Drone", "Extractor", "Drone", "Hatchery", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Scourge", "Hatchery", "Extractor", "Extractor", "Hatchery"]},
-	    "Terran_Flash" : { "Race" : "Terran", "OpeningBuildOrder" : [ "SCV", "Barracks", "Bunker", "Marine", "Marine", "Marine", "Marine", "Refinery", "SCV", "SCV", "Supply Depot", "SCV", "Bunker", "Marine", "Marine", "SCV", "SCV", "Factory", "Armory", "Factory", "Supply Depot", "SCV", "SCV", "SCV", "SCV", "SCV", "Machine Shop", "Goliath", "Goliath", "Machine Shop"]}
+"Terran_Flash"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","Supply Depot","SCV", "SCV","SCV","Bunker","Marine",  "SCV",
+
+ "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Refinery","SCV","SCV","SCV","Supply Depot","SCV"]}
         }
     }
 }
