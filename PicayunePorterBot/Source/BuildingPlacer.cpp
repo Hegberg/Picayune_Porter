@@ -207,22 +207,73 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 
     // special easy case of having no pylons
     int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
-    if (b.type.requiresPsi() && numPylons == 0)
-    {
+    if (b.type.requiresPsi() && numPylons == 0) {
         return BWAPI::TilePositions::None;
     }
+	
+	// Bunker requires different placement logic.
+	if ( b.type != BWAPI::UnitTypes::Terran_Bunker ) {
+		// iterate through the list until we've found a suitable location
+		for (size_t i(0); i < closestToBuilding.size(); ++i)
+		{
+			if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
+			{
+				double ms = t.getElapsedTimeInMilliSec();
+				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
-    // iterate through the list until we've found a suitable location
-    for (size_t i(0); i < closestToBuilding.size(); ++i)
-    {
-        if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
-        {
-            double ms = t.getElapsedTimeInMilliSec();
-            //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+				return closestToBuilding[i];
+			}
+		}
+	}
+	else 
+	{
+		int numBunkers = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Bunker);
+		BWAPI::Position home(BWAPI::Broodwar->self()->getStartLocation());
+		BWAPI::Position closest;
+		BWAPI::Position dest;
 
-            return closestToBuilding[i];
-        }
-    }
+		int closestDist = 999999;
+
+		// Get closest Chokepoint to AI base.
+		for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
+		{
+			for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++) {
+				BWAPI::Position point1 = (*c)->getSides().first;
+				BWAPI::Position point2 = (*c)->getSides().second;
+
+				if (numBunkers <= 0) {
+					dest = point1;
+				} else {
+					dest = point2;
+				}
+
+				int distance = abs( home.getApproxDistance(dest) );
+				if (distance < closestDist) {
+					closestDist = distance;
+					closest = dest;
+				}
+
+			}
+		}
+
+		// Closest chokepoint now set.
+		printf("BUNKER PLACEMENT INFO: Closest: %i, %i\n", closest.x, closest.y);
+
+		// iterate through the list until we've found a suitable location
+		const std::vector<BWAPI::TilePosition> & closestToChoke = MapTools::Instance().getClosestTilesTo(closest);
+		for (size_t i(0); i < closestToChoke.size(); ++i) {
+			BWAPI::Broodwar->drawCircleMap(closest.x, closest.y, 30, BWAPI::Colors::Cyan);
+			printf("BUNKER PLACEMENT INFO: Closest: %i, %i\n", closest.x, closest.y);
+			if (canBuildHereWithSpace(closestToChoke[i], b, closestDist, false))
+			{
+				double ms = t.getElapsedTimeInMilliSec();
+				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+
+				return closestToChoke[i];
+			}
+		}
+
+	}
 
     double ms = t.getElapsedTimeInMilliSec();
     //BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
@@ -405,4 +456,3 @@ bool BuildingPlacer::isReserved(int x, int y) const
 
     return _reserveMap[x][y];
 }
-
