@@ -152,6 +152,7 @@
     <ClCompile Include="..\Source\Picayune_PorterModule.cpp" />
     <ClCompile Include="..\Source\UnitData.cpp" />
     <ClCompile Include="..\Source\UnitUtil.cpp" />
+    <ClCompile Include="..\Source\VultureManager.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClInclude Include="..\Source\Picayune_PorterModule.h" />
     <ClInclude Include="..\Source\UnitData.h" />
     <ClInclude Include="..\Source\UnitUtil.h" />
+    <ClInclude Include="..\Source\VultureManager.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
   </ItemGroup>

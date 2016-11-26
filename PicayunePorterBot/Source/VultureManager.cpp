@@ -1,16 +1,17 @@
-#include "MarineManager.h"
+#include "VultureManager.h"
 #include "UnitUtil.h"
 
 using namespace Picayune_Porter;
 
-MarineManager::MarineManager()
+VultureManager::VultureManager()
 {
 }
 
-void MarineManager::executeMicro(const BWAPI::Unitset & targets)
+void VultureManager::executeMicro(const BWAPI::Unitset & targets)
 {
-	const BWAPI::Unitset & marines = getUnits();
-
+	BWAPI::Broodwar->printf("vulture manager working");
+	const BWAPI::Unitset & vultures = getUnits();
+	/*
 	BWAPI::Unitset bunkerTargets;
 	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
 	{
@@ -21,16 +22,16 @@ void MarineManager::executeMicro(const BWAPI::Unitset & targets)
 
 		}
 	}
-
+	*/
 
 
 	// figure out targets
-	BWAPI::Unitset marineTargets;
-	std::copy_if(targets.begin(), targets.end(), std::inserter(marineTargets, marineTargets.end()),
+	BWAPI::Unitset vultureTargets;
+	std::copy_if(targets.begin(), targets.end(), std::inserter(vultureTargets, vultureTargets.end()),
 		[](BWAPI::Unit u){ return u->isVisible(); });
 
-	int marineRange = BWAPI::UnitTypes::Terran_Marine.groundWeapon().maxRange() - 32;
-	
+	int vultureRange = BWAPI::UnitTypes::Terran_Vulture.groundWeapon().maxRange() - 32;
+
 
 	/// <summary>Orders the unit to load the target unit.</summary> Only works if this unit is a
 	/// @Transport or @Bunker type.
@@ -49,57 +50,58 @@ void MarineManager::executeMicro(const BWAPI::Unitset & targets)
 	///
 	/// @see unload, unloadAll, getLoadedUnits, isLoaded
 	//bool load(Unit target, bool shiftQueueCommand = false);
+	/*
 	for (auto & bunker : bunkerTargets)
-			{
+	{
 		for (auto & marine : marines)
 		{
-		
-				if (!marine->isLoaded())
-				{
-					//marine->move(bunker->getPosition());
-					//marine->rightClick(bunker, false);
-					bunker->load(marine, false);
-				}
+
+			if (!marine->isLoaded())
+			{
+				//marine->move(bunker->getPosition());
+				//marine->rightClick(bunker, false);
+				bunker->load(marine, false);
 			}
-			
 		}
 
+	}
+	*/
 
 
 
 
 	// for each zealot
-	for (auto & marine : marines)
+	for (auto & vulture : vultures)
 	{
 
 		// if the order is to attack or defend
 		if (order.getType() == SquadOrderTypes::Attack || order.getType() == SquadOrderTypes::Defend)
 		{
 			// if there are targets
-			if (!marineTargets.empty())
+			if (!vultureTargets.empty())
 			{
 				// find the best target for this zealot
-				BWAPI::Unit target = getTarget(marine, marineTargets);
+				BWAPI::Unit target = getTarget(vulture, vultureTargets);
 
 				if (target && Config::Debug::DrawUnitTargetInfo)
 				{
-					BWAPI::Broodwar->drawLineMap(marine->getPosition(), marine->getTargetPosition(), BWAPI::Colors::Purple);
+					BWAPI::Broodwar->drawLineMap(vulture->getPosition(), vulture->getTargetPosition(), BWAPI::Colors::Purple);
 				}
 
 
 
 
-				Micro::SmartKiteTarget(marine, target);
-				
+				Micro::SmartKiteTarget(vulture, target);
+
 			}
 			// if there are no targets
 			else
 			{
 				// if we're not near the order position
-				if (marine->getDistance(order.getPosition()) > 100)
+				if (vulture->getDistance(order.getPosition()) > 100)
 				{
-						// move to it
-					Micro::SmartAttackMove(marine, order.getPosition());
+					// move to it
+					Micro::SmartAttackMove(vulture, order.getPosition());
 				}
 			}
 		}
@@ -107,7 +109,7 @@ void MarineManager::executeMicro(const BWAPI::Unitset & targets)
 }
 
 // get a target for the zealot to attack
-BWAPI::Unit MarineManager::getTarget(BWAPI::Unit marine, const BWAPI::Unitset & targets)
+BWAPI::Unit VultureManager::getTarget(BWAPI::Unit vulture, const BWAPI::Unitset & targets)
 {
 	int bestPriorityDistance = 1000000;
 	int bestPriority = 0;
@@ -121,30 +123,30 @@ BWAPI::Unit MarineManager::getTarget(BWAPI::Unit marine, const BWAPI::Unitset & 
 	double closestDist = std::numeric_limits<double>::infinity();
 	BWAPI::Unit closestTarget = nullptr;
 
-	int marineRange = BWAPI::UnitTypes::Terran_Marine.groundWeapon().maxRange() - 32;
-	BWAPI::Unitset targetsInMarineRange;
+	int vultureRange = BWAPI::UnitTypes::Terran_Vulture.groundWeapon().maxRange() - 32;
+	BWAPI::Unitset targetsInVultureRange;
 	for (auto & target : targets)
 	{
-		if (target->getDistance(marine) < marineRange && UnitUtil::CanAttack(marine, target))
+		if (target->getDistance(vulture) < vultureRange && UnitUtil::CanAttack(vulture, target))
 		{
-			targetsInMarineRange.insert(target);
+			targetsInVultureRange.insert(target);
 		}
 	}
 
-	const BWAPI::Unitset & newTargets = targetsInMarineRange.empty() ? targets : targetsInMarineRange;
+	const BWAPI::Unitset & newTargets = targetsInVultureRange.empty() ? targets : targetsInVultureRange;
 
 	// check first for units that are in range of our attack that can cause damage
 	// choose the highest priority one from them at the lowest health
 	for (const auto & target : newTargets)
 	{
-		if (!UnitUtil::CanAttack(marine, target))
+		if (!UnitUtil::CanAttack(vulture, target))
 		{
 			continue;
 		}
 
-		double distance = marine->getDistance(target);
-		double LTD = UnitUtil::CalculateLTD(target, marine);
-		int priority = getAttackPriority(marine, target);
+		double distance = vulture->getDistance(target);
+		double LTD = UnitUtil::CalculateLTD(target, vulture);
+		int priority = getAttackPriority(vulture, target);
 		bool targetIsThreat = LTD > 0;
 		BWAPI::Broodwar->drawTextMap(target->getPosition(), "%d", priority);
 
@@ -165,7 +167,7 @@ BWAPI::Unit MarineManager::getTarget(BWAPI::Unit marine, const BWAPI::Unitset & 
 }
 
 // get the attack priority of a type in relation to a zergling
-int MarineManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
+int VultureManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 {
 	BWAPI::UnitType rangedType = rangedUnit->getType();
 	BWAPI::UnitType targetType = target->getType();
@@ -230,7 +232,7 @@ int MarineManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target)
 	}
 }
 
-BWAPI::Unit MarineManager::closestrangedUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign)
+BWAPI::Unit VultureManager::closestrangedUnit(BWAPI::Unit target, std::set<BWAPI::Unit> & rangedUnitsToAssign)
 {
 	double minDistance = 0;
 	BWAPI::Unit closest = nullptr;
