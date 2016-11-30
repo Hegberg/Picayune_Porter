@@ -119,7 +119,7 @@ bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 
 //returns true if we can build this type of unit here with the specified amount of space.
 //space value is stored in this->buildDistance.
-bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist,bool horizontalOnly) const
+bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Building & b,int buildDist, bool horizontalOnly, bool verticalOnly) const
 {
     BWAPI::UnitType type = b.type;
 
@@ -160,11 +160,15 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
         endy = position.y + height + buildDist;
     }
 
-    if (horizontalOnly)
-    {
+    if (horizontalOnly) {
         starty += buildDist;
         endy -= buildDist;
     }
+
+	if (verticalOnly) {
+		startx += buildDist;
+		endx -= buildDist;
+	}
 
     // if this rectangle doesn't fit on the map we can't build here
     if (startx < 0 || starty < 0 || endx > BWAPI::Broodwar->mapWidth() || endx < position.x + width || endy > BWAPI::Broodwar->mapHeight())
@@ -210,7 +214,10 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
     if (b.type.requiresPsi() && numPylons == 0) {
         return BWAPI::TilePositions::None;
     }
-	
+
+
+	BWAPI::Broodwar->printf("Building Type: %d vs %d", b.type, BWAPI::UnitTypes::Terran_Bunker);
+
 	// Bunker requires different placement logic.
 	if ( b.type != BWAPI::UnitTypes::Terran_Bunker ) {
 		// iterate through the list until we've found a suitable location
@@ -238,37 +245,60 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 		for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
 		{
 			for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++) {
-				BWAPI::Position point1 = (*c)->getSides().first;
-				BWAPI::Position point2 = (*c)->getSides().second;
-
-				if (numBunkers <= 0) {
-					dest = point1;
-				} else {
-					dest = point2;
+				if (numBunkers % 2 == 0) {
+					dest = (*c)->getSides().first;
+				}
+				else {
+					dest = (*c)->getSides().second;
 				}
 
-				int distance = abs( home.getApproxDistance(dest) );
+				int distance = abs( home.getDistance(dest) );
 				if (distance < closestDist) {
 					closestDist = distance;
 					closest = dest;
+
+					// This can give numbers that are not multiples of 32, which isn't useful at all.
+					// Get the nearest valid multiple of 64 (2 tiles)
+					int xRemainder = closest.x % 64;
+					if (xRemainder != 0) {
+						int signMod = 1;
+
+						closest.x += signMod * (64 - xRemainder);
+						closest.x += signMod * 64;
+					}
+
+					int yRemainder = closest.y % 64;
+					if (yRemainder != 0) {
+						int signMod = 1;
+						// Then home is smaller than closest, meaning home is at top of map.
+						if (closest.x - home.x > 0) {
+							signMod = -1;
+						}
+						//else {
+						//	signMod = 1;
+						//}
+						closest.y += signMod * (64 - yRemainder);
+						closest.y += signMod * 64;
+					}
+
 				}
 
 			}
 		}
 
 		// Closest chokepoint now set.
-		printf("BUNKER PLACEMENT INFO: Closest: %i, %i\n", closest.x, closest.y);
+		BWAPI::Broodwar->printf("Closest: %i, %i", closest.x, closest.y);
 
 		// iterate through the list until we've found a suitable location
 		const std::vector<BWAPI::TilePosition> & closestToChoke = MapTools::Instance().getClosestTilesTo(closest);
 		for (size_t i(0); i < closestToChoke.size(); ++i) {
-			BWAPI::Broodwar->drawCircleMap(closest.x, closest.y, 30, BWAPI::Colors::Cyan);
-			printf("BUNKER PLACEMENT INFO: Closest: %i, %i\n", closest.x, closest.y);
-			if (canBuildHereWithSpace(closestToChoke[i], b, closestDist, false))
+			BWAPI::Broodwar->drawCircleMap(closest.x, closest.y, 300, BWAPI::Colors::Cyan);
+			BWAPI::Broodwar->printf("Closest: %i, %i", closest.x, closest.y);
+			if (canBuildHereWithSpace(closestToChoke[i], b, closestDist, false, true))
 			{
 				double ms = t.getElapsedTimeInMilliSec();
 				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
-
+				BWAPI::Broodwar->printf("Closest Index: %i", i);
 				return closestToChoke[i];
 			}
 		}
@@ -456,3 +486,4 @@ bool BuildingPlacer::isReserved(int x, int y) const
 
     return _reserveMap[x][y];
 }
+
