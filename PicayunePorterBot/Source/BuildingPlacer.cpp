@@ -239,7 +239,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 		BWAPI::Position closest;
 		BWAPI::Position dest;
 
-		int closestDist = 999999;
+		double closestDist = 999999;
 
 		// Get closest Chokepoint to AI base.
 		for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
@@ -251,8 +251,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 				else {
 					dest = (*c)->getSides().second;
 				}
-
-				int distance = abs( home.getDistance(dest) );
+				
+				double distance = abs( home.getDistance(dest) );
 				if (distance < closestDist) {
 					closestDist = distance;
 					closest = dest;
@@ -264,21 +264,21 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 						int signMod = 1;
 
 						closest.x += signMod * (64 - xRemainder);
-						closest.x += signMod * 64;
 					}
 
 					int yRemainder = closest.y % 64;
 					if (yRemainder != 0) {
 						int signMod = 1;
 						// Then home is smaller than closest, meaning home is at top of map.
-						if (closest.x - home.x > 0) {
+						if ( (home.y - closest.y) < 0) {
 							signMod = -1;
 						}
 						//else {
 						//	signMod = 1;
 						//}
+
 						closest.y += signMod * (64 - yRemainder);
-						closest.y += signMod * 64;
+						closest.y += signMod * 96;
 					}
 
 				}
@@ -291,6 +291,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 
 		// iterate through the list until we've found a suitable location
 		const std::vector<BWAPI::TilePosition> & closestToChoke = MapTools::Instance().getClosestTilesTo(closest);
+		BWAPI::Broodwar->printf("ClosestToChoke size: %i", closestToChoke.size());
 		for (size_t i(0); i < closestToChoke.size(); ++i) {
 			BWAPI::Broodwar->drawCircleMap(closest.x, closest.y, 300, BWAPI::Colors::Cyan);
 			BWAPI::Broodwar->printf("Closest: %i, %i", closest.x, closest.y);
