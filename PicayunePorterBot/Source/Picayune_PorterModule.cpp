@@ -29,8 +29,8 @@ void Picayune_PorterModule::onStart()
 
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
-    ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
-	//ParseUtils::ParseConfigFile("E:/GamesForSchool/ualbertabot/PicayunePorterBot/Picayune_Porter_Config.txt");
+    //ParseUtils::ParseConfigFile(Config::ConfigFile::ConfigFileLocation);
+	ParseUtils::ParseConfigFile("D:/Games/PicayunePorter/PicayunePorterBot/Picayune_Porter_Config.txt");
 	//ParseUtils::ParseConfigFile("C:/BWAPI/Picayune_Porter/Picayune_PorterBot/Picayune_Porter_Config.txt");
     // Set our BWAPI options here    
 	BWAPI::Broodwar->setLocalSpeed(Config::BWAPIOptions::SetLocalSpeed);
