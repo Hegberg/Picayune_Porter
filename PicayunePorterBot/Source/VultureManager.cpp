@@ -23,6 +23,14 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
 	for (auto & rangedUnit : rangedUnits)
 	{
+		//if (rangedUnit->getSpiderMineCount() > 0){
+			//if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition())){
+				//BWAPI::Broodwar->printf("vulture spidermines -> true, %d", rangedUnit->getSpiderMineCount());
+				//rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition());
+				//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines, BWAPI::Position(rangedUnit->getPosition().x -1, rangedUnit->getPosition().y -1));
+			//}
+		//}
+
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
 
@@ -44,14 +52,6 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				// attack it
 				if (Config::Micro::KiteWithRangedUnits)
 				{
-					if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, target->getPosition())){
-						BWAPI::Broodwar->printf("vulture -> true");
-						rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, target->getPosition());
-						rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
-					}
-					else {
-						BWAPI::Broodwar->printf("vulture -> false");
-					}
 					if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 					{
 						Micro::MutaDanceTarget(rangedUnit, target);
@@ -63,14 +63,6 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 				else
 				{
-					if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, target->getPosition())){
-						BWAPI::Broodwar->printf("vulture2 -> true");
-						rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, target->getPosition());
-						rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
-					}
-					else {
-						BWAPI::Broodwar->printf("vulture2 -> false");
-					}
 					Micro::SmartAttackUnit(rangedUnit, target);
 				}
 			}
@@ -150,7 +142,6 @@ int VultureManager::getAttackPriority(BWAPI::Unit rangedUnit, BWAPI::Unit target
 	{
 		if (target->getType() == BWAPI::UnitTypes::Protoss_Carrier)
 		{
-
 			return 100;
 		}
 

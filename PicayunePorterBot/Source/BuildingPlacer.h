@@ -42,6 +42,10 @@ public:
     // returns a build location near a building's desired location
     BWAPI::TilePosition		getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly = false) const;
 
+	// Created by Micheal Morris and D'Arcy Hamilton.   
+	// Preferentially places turrets near chokepoints. Is not very clever.
+	BWAPI::TilePosition     getTurretBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const;
+
     void					reserveTiles(BWAPI::TilePosition position,int width,int height);
     void					freeTiles(BWAPI::TilePosition position,int width,int height);
 

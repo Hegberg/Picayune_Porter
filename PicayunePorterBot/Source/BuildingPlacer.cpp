@@ -199,28 +199,28 @@ BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b,int padd
     return BWAPI::TilePosition(0,0);
 }
 
-BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
+BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const
 {
-    SparCraft::Timer t;
-    t.start();
+	SparCraft::Timer t;
+	t.start();
 
-    // get the precomputed vector of tile positions which are sorted closes to this location
-    const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
+	// get the precomputed vector of tile positions which are sorted closes to this location
+	const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
 
-    double ms1 = t.getElapsedTimeInMilliSec();
+	double ms1 = t.getElapsedTimeInMilliSec();
 
-    // special easy case of having no pylons
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
-    if (b.type.requiresPsi() && numPylons == 0) {
-        return BWAPI::TilePositions::None;
-    }
+	// special easy case of having no pylons
+	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+	if (b.type.requiresPsi() && numPylons == 0) {
+		return BWAPI::TilePositions::None;
+	}
 
 	// Bunker requires different placement logic.
-	if ( b.type != BWAPI::UnitTypes::Terran_Bunker ) {
+
 		// iterate through the list until we've found a suitable location
 		for (size_t i(0); i < closestToBuilding.size(); ++i)
 		{
-			if (canBuildHereWithSpace(closestToBuilding[i],b,buildDist,horizontalOnly))
+			if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
 			{
 				double ms = t.getElapsedTimeInMilliSec();
 				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
@@ -228,10 +228,31 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 				return closestToBuilding[i];
 			}
 		}
-	}
-	else 
-	{
-		int numBunkers = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Terran_Bunker);
+		double ms = t.getElapsedTimeInMilliSec();
+		//BWAPI::Broodwar->printf("Turret Placer Took %lf ms", ms);
+
+		//  Todo: the BuildingManager can't handle a position of none, and will lock up. 
+		//  Thankfully its virtually impossible to get to this point
+		return  BWAPI::TilePositions::None;
+}
+
+// Created by Micheal Morris and D'Arcy Hamilton
+BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
+{
+    SparCraft::Timer t;
+    t.start();
+
+    // get the precomputed vector of tile positions which are sorted closes to this location
+
+ 
+
+    // special easy case of having no pylons
+    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+    if (b.type.requiresPsi() && numPylons == 0) {
+        return BWAPI::TilePositions::None;
+    }
+
+		int numTurrets = BWAPI::Broodwar->self()->completedUnitCount(b.type);
 		BWAPI::Position home(BWAPI::Broodwar->self()->getStartLocation());
 		BWAPI::Position closest;
 		BWAPI::Position dest;
@@ -242,8 +263,8 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 		for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
 		{
 			for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++) {
-				if (numBunkers % 2 == 0) {
-					dest = (*c)->getSides().first;
+				if (numTurrets > 2) {
+					return BuildingPlacer::Instance().getBuildLocationNear(b, buildDist, false);
 				}
 				else {
 					dest = (*c)->getSides().second;
@@ -253,22 +274,22 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 				if (distance < closestDist) {
 					closestDist = distance;
 					closest = dest;
-
+					/*
 					// This can give numbers that are not multiples of 32, which isn't useful at all.
 					// Get the nearest valid multiple of 64 (2 tiles)
-					/*int xRemainder = closest.x % 64;
+					int xRemainder = closest.x % 64;
 					if (xRemainder != 0) {
 						int signMod = 1;
 
 						closest.x += signMod * (64 - xRemainder);
-					}*/
+					}
 
-					/*int yRemainder = closest.y % 64;
+					int yRemainder = closest.y % 64;
 					if (yRemainder != 0) {
-						*/
+						
 
-						//closest.y += signMod * (64 - yRemainder);
-					//}
+						closest.y += signMod * (64 - yRemainder);
+					}
 
 					int signMod = 1;
 					// Then home is smaller than closest, meaning home is at top of map.
@@ -277,41 +298,46 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b,int 
 					}
 
 					closest.y += signMod * 96;
-					
+					*/
 				}
 
 			}
 		}
 
+		//this map has no known chokepoints
+		if (closestDist == 999999)
+		{
+			return BuildingPlacer::Instance().getBuildLocationNear(b, buildDist, false);
+		}
 		// Closest chokepoint now set.
-		BWAPI::Broodwar->printf("Desired (%i, %i) = %i ", b.desiredPosition.x, b.desiredPosition.y, b.desiredPosition.isValid());
-		BWAPI::Broodwar->printf("Closest (%i, %i) = %i ", closest.x, closest.y, closest.isValid());
-		//closest.x = 118 * 32;
-		//closest.y = 4 * 32;
-		
-		BWAPI::Broodwar->printf("Desired modded (%i, %i) = %i ", closest.x, closest.y, closest.isValid());
+		//BWAPI::Broodwar->printf("closest (%i, %i) = %i ", closest.x, closest.y, closest.isValid());
 
-		//Point<int ,1> p(2,3)
+		// we want to build turrets at the top of the ramp, so build sightly closer to the base.
+		closest.x = (int)(4 * closest.x + BWAPI::Broodwar->self()->getStartLocation().x*32) / 5;
+		closest.y = (int)(4 * closest.y + BWAPI::Broodwar->self()->getStartLocation().y*32) / 5;
+
 		// iterate through the list until we've found a suitable location
 		const std::vector<BWAPI::TilePosition> & closestToChoke = MapTools::Instance().getClosestTilesTo(closest);
-		BWAPI::Broodwar->printf("ClosestToChoke size: %i", closestToChoke.size());
+		double ms1 = t.getElapsedTimeInMilliSec();
+		//BWAPI::Broodwar->printf("ClosestToChoke size: %i", closestToChoke.size());
 		for (size_t i(0); i < closestToChoke.size(); ++i) {
-			BWAPI::Broodwar->drawCircleMap(closest.x, closest.y, 300, BWAPI::Colors::Cyan);
-			BWAPI::Broodwar->printf("Closest: %i, %i", closest.x, closest.y);
+			//BWAPI::Broodwar->printf("Closest: %i, %i", closest.x, closest.y);
 			if (canBuildHereWithSpace(closestToChoke[i], b, buildDist, false, true))
 			{
 				double ms = t.getElapsedTimeInMilliSec();
 				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
-				BWAPI::Broodwar->printf("Closest Index: %i", i);
+				//BWAPI::Broodwar->printf("Built turret at %i, %i", closestToChoke[i].x, closestToChoke[i].y);
 				return closestToChoke[i];
 			}
-		}
+		
 
 	}
 
     double ms = t.getElapsedTimeInMilliSec();
-    //BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
+    //BWAPI::Broodwar->printf("Turret Placer Took %lf ms", ms);
 
+	//  Todo: the BuildingManager can't handle a position of none, and will lock up. 
+	//  Thankfully its virtually impossible to get to this point
     return  BWAPI::TilePositions::None;
 }
 

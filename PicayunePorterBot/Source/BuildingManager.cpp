@@ -68,37 +68,42 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
     // for each building that doesn't have a builder, assign one
     for (Building & b : _buildings)
     {
-        if (b.status != BuildingStatus::Unassigned)
+		if (b.status != BuildingStatus::Unassigned && b.status != BuildingStatus::DeadWorker)
         {
             continue;
         }
 
         if (_debugMode) { BWAPI::Broodwar->printf("Assigning Worker To: %s",b.type.getName().c_str()); }
-
         // grab a worker unit from WorkerManager which is closest to this final position
         BWAPI::Unit workerToAssign = WorkerManager::Instance().getBuilder(b);
 
-        if (workerToAssign)
-        {
-            //BWAPI::Broodwar->printf("VALID WORKER BEING ASSIGNED: %d", workerToAssign->getID());
+		if (workerToAssign)
+		{
+			//BWAPI::Broodwar->printf("VALID WORKER BEING ASSIGNED: %d", workerToAssign->getID());
 
-            // TODO: special case of terran building whose worker died mid construction
-            //       send the right click command to the buildingUnit to resume construction
-            //		 skip the buildingsAssigned step and push it back into buildingsUnderConstruction
+			// TODO: special case of terran building whose worker died mid construction
+			//       send the right click command to the buildingUnit to resume construction
+			//		 skip the buildingsAssigned step and push it back into buildingsUnderConstruction
 
-            b.builderUnit = workerToAssign;
+			b.builderUnit = workerToAssign;
 
-            BWAPI::TilePosition testLocation = getBuildingLocation(b);
-            if (!testLocation.isValid())
-            {
-                continue;
-            }
+			if (b.status == BuildingStatus::DeadWorker)
+			{
+				b.builderUnit->rightClick(b.buildingUnit);
+			}
+			else
+			{
+				BWAPI::TilePosition testLocation = getBuildingLocation(b);
+				if (!testLocation.isValid())
+				{
+					continue;
+				}
 
-            b.finalPosition = testLocation;
+				b.finalPosition = testLocation;
 
-            // reserve this building's space
-            BuildingPlacer::Instance().reserveTiles(b.finalPosition,b.type.tileWidth(),b.type.tileHeight());
-
+				// reserve this building's space
+				BuildingPlacer::Instance().reserveTiles(b.finalPosition, b.type.tileWidth(), b.type.tileHeight());
+			}
             b.status = BuildingStatus::Assigned;
         }
     }
@@ -220,8 +225,28 @@ void BuildingManager::checkForStartedConstruction()
     }
 }
 
-// STEP 5: IF WE ARE TERRAN, THIS MATTERS, SO: LOL
-void BuildingManager::checkForDeadTerranBuilders() {}
+// STEP 5: IF WE ARE TERRAN, CHECK IF A WORKER DIED MID-CONSTRUCTION
+// Implemented by D'Arcy Hamilton
+// Not very smart, if your worker just died you're probably sending another to its death.
+void BuildingManager::checkForDeadTerranBuilders() 
+{///*
+	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran){
+		for (auto & b : _buildings)
+		{
+			if (b.status == BuildingStatus::UnderConstruction)
+			{
+				if (b.builderUnit->getHitPoints() < 1){
+					//BWAPI::Broodwar->printf("I think my builder died");
+					b.status = BuildingStatus::DeadWorker;
+				}
+				else{
+					//BWAPI::Broodwar->printf("my builder lives!");
+				}
+			}
+		}
+	}
+	//*/
+}
 
 // STEP 6: CHECK FOR COMPLETED BUILDINGS
 void BuildingManager::checkForCompletedBuildings()
@@ -394,48 +419,53 @@ std::vector<BWAPI::UnitType> BuildingManager::buildingsQueued()
 
 BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 {
-    int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 
-    if (b.isGasSteal)
-    {
-        BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-        PiPo_ASSERT(enemyBaseLocation,"Should have enemy base location before attempting gas steal");
-        PiPo_ASSERT(enemyBaseLocation->getGeysers().size() > 0,"Should have spotted an enemy geyser");
+	if (b.isGasSteal)
+	{
+		BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
+		PiPo_ASSERT(enemyBaseLocation, "Should have enemy base location before attempting gas steal");
+		PiPo_ASSERT(enemyBaseLocation->getGeysers().size() > 0, "Should have spotted an enemy geyser");
 
-        for (auto & unit : enemyBaseLocation->getGeysers())
-        {
-            BWAPI::TilePosition tp(unit->getInitialTilePosition());
-            return tp;
-        }
-    }
+		for (auto & unit : enemyBaseLocation->getGeysers())
+		{
+			BWAPI::TilePosition tp(unit->getInitialTilePosition());
+			return tp;
+		}
+	}
 
-    if (b.type.requiresPsi() && numPylons == 0)
-    {
-        return BWAPI::TilePositions::None;
-    }
+	if (b.type.requiresPsi() && numPylons == 0)
+	{
+		return BWAPI::TilePositions::None;
+	}
 
-    if (b.type.isRefinery())
-    {
-        return BuildingPlacer::Instance().getRefineryPosition();
-    }
+	if (b.type.isRefinery())
+	{
+		return BuildingPlacer::Instance().getRefineryPosition();
+	}
 
-    if (b.type.isResourceDepot())
-    {
-        // get the location 
-        BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
+	if (b.type.isResourceDepot())
+	{
+		// get the location 
+		BWAPI::TilePosition tile = MapTools::Instance().getNextExpansion();
 
-        return tile;
-    }
+		return tile;
+	}
 
-    // set the building padding specifically
-    int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
-    if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
-    {
-        distance = Config::Macro::PylonSpacing;
-    }
+	// set the building padding specifically
+	int distance = b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon ? 0 : Config::Macro::BuildingSpacing;
+	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && (numPylons < 3))
+	{
+		distance = Config::Macro::PylonSpacing;
+	}
 
-    // get a position within our region
-    return BuildingPlacer::Instance().getBuildLocationNear(b,distance,false);
+	// get a position within our region
+	if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon || b.type == BWAPI::UnitTypes::Terran_Bunker 
+		|| b.type == BWAPI::UnitTypes::Terran_Missile_Turret || b.type == BWAPI::UnitTypes::Zerg_Creep_Colony)
+	{
+		return BuildingPlacer::Instance().getTurretBuildLocationNear(b, distance, false);
+	}
+    return BuildingPlacer::Instance().getBuildLocationNear(b, distance, false);
 }
 
 void BuildingManager::removeBuildings(const std::vector<Building> & toRemove)

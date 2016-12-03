@@ -201,7 +201,7 @@ const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Posi
     // make sure the distance map is calculated with pos as a destination
 	// Build Bunker: Get Ground Distance returns -1 instead of 0.
     int a = getGroundDistance(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()),pos);
-	BWAPI::Broodwar->printf("a: %i", a);
+	//BWAPI::Broodwar->printf("a: %i", a);
 
     return _allMaps[pos].getSortedTiles();
 }

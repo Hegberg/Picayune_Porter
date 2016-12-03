@@ -53,7 +53,7 @@ class StrategyManager
 	        void	                writeResults();
 	const	int					    getScore(BWAPI::Player player) const;
 	const	double				    getUCBValue(const size_t & strategy) const;
-	const	bool				    shouldExpandNow() const;
+	const	int				    shouldExpandNow() const;
     const	MetaPairVector		    getProtossBuildOrderGoal() const;
 	const	MetaPairVector		    getTerranBuildOrderGoal() const;
 	const	MetaPairVector		    getZergBuildOrderGoal() const;

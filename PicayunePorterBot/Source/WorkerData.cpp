@@ -17,7 +17,6 @@ WorkerData::WorkerData()
 void WorkerData::workerDestroyed(BWAPI::Unit unit)
 {
 	if (!unit) { return; }
-
 	clearPreviousJob(unit);
 	workers.erase(unit);
 }

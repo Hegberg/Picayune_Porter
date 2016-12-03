@@ -636,6 +636,7 @@ void WorkerManager::onUnitDestroy(BWAPI::Unit unit)
 	{
 		rebalanceWorkers();
 	}
+
 }
 
 void WorkerManager::drawResourceDebugInfo() 

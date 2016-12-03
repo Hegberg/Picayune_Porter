@@ -18,7 +18,7 @@
     {
         "UseSparcraftSimulation"    : true,
         "KiteWithRangedUnits"       : true,
-        "KiteLongerRangedUnits"     : ["Bunker", "Vulture"],
+        "KiteLongerRangedUnits"     : ["Bunker", "Vulture", "Mutalisk"],
         "WorkersDefendRush"         : false,
         "RetreatMeleeUnitShields"   : 0,
         "RetreatMeleeUnitHP"        : 0,
@@ -49,13 +49,13 @@
         "DrawModuleTimers"          : false,
         "DrawResourceInfo"          : false,
         "DrawCombatSimInfo"         : false,
-        "DrawUnitTargetInfo"        : false,
-        "DrawBWTAInfo"              : false,
+        "DrawUnitTargetInfo"        : true,
+        "DrawBWTAInfo"              : true,
         "DrawMapGrid"               : false,
         "DrawSquadInfo"             : false,
         "DrawWorkerInfo"            : false,
         "DrawMouseCursorInfo"       : false,
-        "DrawBuildingInfo"          : false,
+        "DrawBuildingInfo"          : true,
         "DrawReservedBuildingTiles" : false,
         "DrawBOSSStateInfo"         : false,
         "PrintModuleTimeout"        : false
@@ -79,7 +79,7 @@
     "Strategy" :
     {
         
-        "Terran"                    : "Terran_Flash",
+        "Terran"                    : "Terran_FlashvProtoss",
         
         "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : false,
@@ -113,7 +113,7 @@
 
 "Terran_Flash"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","SCV","Supply Depot", "SCV","SCV","Bunker","Marine",  "SCV",
 
- "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Refinery","SCV","SCV","SCV","Supply Depot","SCV"]},
+ "Marine","SCV","Supply Depot","Marine","SCV",  "Marine", "Refinery","SCV","SCV","SCV","Supply Depot","SCV","Supply Depot"]},
 
 "Terran_FlashvProtoss"    : { "Race" : "Terran",  "OpeningBuildOrder" : ["SCV", "SCV", "SCV", "SCV", "Barracks","SCV","Supply Depot", "SCV","SCV","Bunker","Marine",  "SCV",
 

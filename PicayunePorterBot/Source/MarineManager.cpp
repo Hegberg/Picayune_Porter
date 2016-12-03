@@ -68,7 +68,7 @@ void MarineManager::executeMicro(const BWAPI::Unitset & targets)
 
 
 
-	// for each zealot
+	// for each marine
 	for (auto & marine : marines)
 	{
 
