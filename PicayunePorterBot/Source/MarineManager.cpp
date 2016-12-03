@@ -49,20 +49,20 @@ void MarineManager::executeMicro(const BWAPI::Unitset & targets)
 	///
 	/// @see unload, unloadAll, getLoadedUnits, isLoaded
 	//bool load(Unit target, bool shiftQueueCommand = false);
-for (auto & bunker : bunkerTargets)
-		{
-	for (auto & marine : marines)
-	{
-		
-			if (!marine->isLoaded())
+	for (auto & bunker : bunkerTargets)
 			{
-				//marine->move(bunker->getPosition());
-				//marine->rightClick(bunker, false);
-				bunker->load(marine, false);
+		for (auto & marine : marines)
+		{
+		
+				if (!marine->isLoaded())
+				{
+					//marine->move(bunker->getPosition());
+					//marine->rightClick(bunker, false);
+					bunker->load(marine, false);
+				}
 			}
-		}
 			
-	}
+		}
 
 
 

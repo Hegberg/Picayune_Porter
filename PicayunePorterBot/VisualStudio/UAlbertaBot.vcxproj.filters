@@ -154,6 +154,7 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MarineManager.cpp" />
+    <ClCompile Include="..\Source\VultureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -280,6 +281,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\MarineManager.h" />
+    <ClInclude Include="..\Source\VultureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
