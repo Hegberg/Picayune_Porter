@@ -3,8 +3,6 @@
 
 using namespace Picayune_Porter;
 
-bool vulture_mines_researched = false;
-
 VultureManager::VultureManager()
 {
 }
@@ -19,15 +17,7 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 {
 	const BWAPI::Unitset & rangedUnits = getUnits();
 
-	//check if mines researched
-	/**
-	BWAPI::Broodwar->printf("vulture mines researched ->  no " + BWAPI::TechTypes::Spider_Mines);
-	if (BWAPI::TechTypes::Spider_Mines){
-		vulture_mines_researched = true;
-		BWAPI::Broodwar->printf("vulture mines researched -> yes " + BWAPI::TechTypes::Spider_Mines);
-	}
-	*/
-	
+	// figure out targets
 	BWAPI::Unitset rangedUnitTargets;
 	std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), [](BWAPI::Unit u){ return u->isVisible(); });
 
@@ -52,11 +42,16 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
 
 				// attack it
-				//add dropping mines here if researched
 				if (Config::Micro::KiteWithRangedUnits)
 				{
-					// figure out targets
-					//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
+					if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, target->getPosition())){
+						BWAPI::Broodwar->printf("vulture -> true");
+						rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, target->getPosition());
+						rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
+					}
+					else {
+						BWAPI::Broodwar->printf("vulture -> false");
+					}
 					if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 					{
 						Micro::MutaDanceTarget(rangedUnit, target);
@@ -68,7 +63,14 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 				else
 				{
-					//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
+					if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, target->getPosition())){
+						BWAPI::Broodwar->printf("vulture2 -> true");
+						rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, target->getPosition());
+						rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
+					}
+					else {
+						BWAPI::Broodwar->printf("vulture2 -> false");
+					}
 					Micro::SmartAttackUnit(rangedUnit, target);
 				}
 			}

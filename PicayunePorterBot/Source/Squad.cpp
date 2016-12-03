@@ -58,6 +58,7 @@ void Squad::update()
 		_rangedManager.regroup(regroupPosition);
         _tankManager.regroup(regroupPosition);
         _medicManager.regroup(regroupPosition);
+		_vultureManager.execute(_order);
 		//_marineManager.regroup(regroupPosition);
 	}
 	else // otherwise, execute micro
@@ -169,10 +170,10 @@ void Squad::addUnitsToMicroManagers()
 			{
 				marineUnits.insert(unit);
 			}
-			else if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture)
+			/*else if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 			{
 				vultureUnits.insert(unit);
-			}
+			}*/
 			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
