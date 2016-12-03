@@ -3,6 +3,8 @@
 
 using namespace Picayune_Porter;
 
+bool vulture_mines_researched = false;
+
 VultureManager::VultureManager()
 {
 }
@@ -17,7 +19,15 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 {
 	const BWAPI::Unitset & rangedUnits = getUnits();
 
-	// figure out targets
+	//check if mines researched
+	/**
+	BWAPI::Broodwar->printf("vulture mines researched ->  no " + BWAPI::TechTypes::Spider_Mines);
+	if (BWAPI::TechTypes::Spider_Mines){
+		vulture_mines_researched = true;
+		BWAPI::Broodwar->printf("vulture mines researched -> yes " + BWAPI::TechTypes::Spider_Mines);
+	}
+	*/
+	
 	BWAPI::Unitset rangedUnitTargets;
 	std::copy_if(targets.begin(), targets.end(), std::inserter(rangedUnitTargets, rangedUnitTargets.end()), [](BWAPI::Unit u){ return u->isVisible(); });
 
@@ -45,6 +55,8 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				//add dropping mines here if researched
 				if (Config::Micro::KiteWithRangedUnits)
 				{
+					// figure out targets
+					//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
 					if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 					{
 						Micro::MutaDanceTarget(rangedUnit, target);
@@ -56,6 +68,7 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 				else
 				{
+					//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines);
 					Micro::SmartAttackUnit(rangedUnit, target);
 				}
 			}
