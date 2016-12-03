@@ -90,10 +90,10 @@ int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destinati
     if (_allMaps.find(destination) == _allMaps.end())
     {
         // if we have computed the opposite direction, we can use that too
-        if (_allMaps.find(origin) != _allMaps.end())
+        /*if (_allMaps.find(origin) != _allMaps.end())
         {
             return _allMaps[origin][destination];
-        }
+        }*/
 
         // add the map and compute it
         _allMaps.insert(std::pair<BWAPI::Position,DistanceMap>(destination,DistanceMap()));
@@ -199,7 +199,9 @@ void MapTools::search(DistanceMap & dmap,const int sR,const int sC)
 const std::vector<BWAPI::TilePosition> & MapTools::getClosestTilesTo(BWAPI::Position pos)
 {
     // make sure the distance map is calculated with pos as a destination
+	// Build Bunker: Get Ground Distance returns -1 instead of 0.
     int a = getGroundDistance(BWAPI::Position(BWAPI::Broodwar->self()->getStartLocation()),pos);
+	BWAPI::Broodwar->printf("a: %i", a);
 
     return _allMaps[pos].getSortedTiles();
 }
