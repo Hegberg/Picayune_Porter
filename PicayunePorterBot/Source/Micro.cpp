@@ -42,7 +42,7 @@ void Micro::SmartAttackUnit(BWAPI::Unit attacker, BWAPI::Unit target)
     // if nothing prevents it, attack the target
     attacker->attack(target);
 	if (attacker->getType() == BWAPI::UnitTypes::Terran_Vulture) {
-		BWAPI::Broodwar->printf("vulture mines");
+		//BWAPI::Broodwar->printf("vulture mines");
 		//attacker->useTech(BWAPI::TechTypes::Spider_Mines);
 		SmartLaySpiderMine(attacker, attacker->getPosition());
 	}
