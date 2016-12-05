@@ -11,6 +11,7 @@ namespace Picayune_Porter
 		std::map<BWAPI::Unit, bool>	cloakedUnitMap;
 
 		bool isAssigned(BWAPI::Unit unit);
+		bool explore = true;
 
 		BWAPI::Unit unitClosestToEnemy;
 

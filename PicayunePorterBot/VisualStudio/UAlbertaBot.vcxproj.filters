@@ -155,7 +155,7 @@
     </ClCompile>
     <ClCompile Include="..\Source\MarineManager.cpp" />
     <ClCompile Include="..\Source\VultureManager.cpp" />
-    <ClCompile Include="ComsatManager.cpp" />
+    <ClCompile Include="..\Source\ComsatManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\CombatCommander.h">
@@ -283,7 +283,7 @@
     </ClInclude>
     <ClInclude Include="..\Source\MarineManager.h" />
     <ClInclude Include="..\Source\VultureManager.h" />
-    <ClInclude Include="ComsatManager.h" />
+    <ClInclude Include="..\Source\ComsatManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

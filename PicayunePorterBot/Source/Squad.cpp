@@ -62,6 +62,8 @@ void Squad::update()
 		_vultureManager.regroup(regroupPosition);
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
 		_detectorManager.execute(_order);
+		_comsatManager.setUnitClosestToEnemy(unitClosestToEnemy());
+		_comsatManager.execute(_order);
 		
 	}
 	else // otherwise, execute micro
@@ -76,6 +78,8 @@ void Squad::update()
 
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
 		_detectorManager.execute(_order);
+		_comsatManager.setUnitClosestToEnemy(unitClosestToEnemy());
+		_comsatManager.execute(_order);
 	}
 }
 
@@ -218,7 +222,7 @@ void Squad::addUnitsToMicroManagers()
 	_medicManager.setUnits(medicUnits);
 	_marineManager.setUnits(marineUnits);
 	_vultureManager.setUnits(vultureUnits);
-	_comsatUnits.setUnits(comsatUnits);
+	_comsatManager.setUnits(comsatUnits);
 	
 }
 

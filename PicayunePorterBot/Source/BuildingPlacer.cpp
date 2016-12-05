@@ -386,17 +386,11 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
 	//D'Arcy Hamilton - units do not block the building of Addons, except they do
     if (!BWAPI::Broodwar->isBuildable(x,y))
     {
-		if (b.type.isAddon()){
-			BWAPI::Broodwar->printf("addon builder1");
-		}
         return false;
     }
 
     if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
     {
-		if (b.type.isAddon()){
-			BWAPI::Broodwar->printf("addon builder2");
-		}
         return false;
     }
 
@@ -404,18 +398,12 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     {
 		if ((b.builderUnit != nullptr) && ((unit != b.builderUnit) && !b.type.isAddon()))
         {
-			if (b.type.isAddon()){
-				BWAPI::Broodwar->printf("addon builder3");
-			}
             return false;
         }
     }
 
     if (!tp.isValid())
     {
-		if (b.type.isAddon()){
-			BWAPI::Broodwar->printf("addon builder4");
-		}
         return false;
     }
 

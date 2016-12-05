@@ -1,7 +1,6 @@
 #include "Tools.h"
 #include "BuildOrderSearchGoal.h"
 #include "NaiveBuildOrderSearch.h"
-
 using namespace BOSS;
 
 #include "JSONTools.h"

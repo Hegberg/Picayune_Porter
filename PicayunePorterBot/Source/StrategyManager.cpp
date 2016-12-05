@@ -254,6 +254,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 
 	else if (Config::Strategy::StrategyName == "Terran_Flash" || Config::Strategy::StrategyName == "Terran_FlashvProtoss")
 	{
+		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, numFactory+2));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
 		if (numMarines < 4){
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numMarines + 2));
@@ -273,6 +274,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 			else  if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
 			{
 				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
 			}
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Academy, 1));
@@ -286,17 +288,13 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 		if (numArmory > 0)
 		{
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Comsat_Station, numCC));
-			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Charon_Boosters) < 0)
-			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
-			}
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 4));
 			
-			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 1)
+			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 0)
 			{
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
 			}
-			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 1)
+			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) == 0)
 			{
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
 			}
@@ -312,7 +310,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Facility, 1));
 			}
 			if (numScienceFacility > 0){
-				if (!numScienceVessel > 0){
+				if (!(numScienceVessel > 0)){
 					goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
 				}
 			

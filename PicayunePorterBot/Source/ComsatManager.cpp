@@ -25,13 +25,15 @@ void ComsatManager::executeMicro(const BWAPI::Unitset & targets)
 	// for each detectorUnit
 	for (auto & detectorUnit : detectorUnits)
 	{
-
+		BWAPI::Broodwar->printf("Comsat test");
 		BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-		if (detectorUnit->getEnergy > 150){
+		if (detectorUnit->getEnergy() > 50 && explore){
 			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, explorePosition);
+			explore = !explore;
 		}
-		if(detectorUnit->getEnergy > 50){
-			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, explorePosition);
+		if (detectorUnit->getEnergy() > 50 && !explore){
+			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, unitClosestToEnemy->getPosition());
+			explore = !explore;
 		}
 		
 		/*
