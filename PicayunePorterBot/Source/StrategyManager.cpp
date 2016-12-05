@@ -254,7 +254,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 
 	else if (Config::Strategy::StrategyName == "Terran_Flash" || Config::Strategy::StrategyName == "Terran_FlashvProtoss")
 	{
-		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, numFactory+2));
+
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
 		if (numMarines < 4){
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_SCV, numMarines + 2));
@@ -268,12 +268,12 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 			}
 			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines))
 			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
 			}
 			else  if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
 			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
 			}
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));

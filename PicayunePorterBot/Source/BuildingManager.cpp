@@ -233,8 +233,8 @@ void BuildingManager::checkForDeadTerranBuilders()
 	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran){
 		for (auto & b : _buildings)
 		{
-			//if (b.status == BuildingStatus::UnderConstruction)
-			//{
+			if (b.status == BuildingStatus::UnderConstruction)
+			{
 				if (b.builderUnit->getHitPoints() < 1){
 					//BWAPI::Broodwar->printf("I think my builder died");
 					b.status = BuildingStatus::DeadWorker;
@@ -242,7 +242,14 @@ void BuildingManager::checkForDeadTerranBuilders()
 				else{
 					//BWAPI::Broodwar->printf("my builder lives!");
 				}
-			//}
+			}
+			if (b.status == BuildingStatus::Assigned)
+			{
+				if (b.builderUnit->getHitPoints() < 1){
+					//BWAPI::Broodwar->printf("I think my builder died");
+					b.status = BuildingStatus::Unassigned;
+				}
+			}
 		}
 	}
 	//*/

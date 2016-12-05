@@ -249,11 +249,6 @@ bool Squad::needsToRegroup()
 		return false;
 	}
 
-	if (unitClosest->getType() == BWAPI::UnitTypes::Terran_Vulture)
-	{
-		return false;
-	}
-
 	// if none of our units are in attack range of any enemy units, don't retreat
 	std::vector<UnitInfo> enemyCombatUnits;
 	const auto & enemyUnitInfo = InformationManager::Instance().getUnitInfo(BWAPI::Broodwar->enemy());
