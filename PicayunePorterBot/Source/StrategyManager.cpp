@@ -218,6 +218,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	int numMachineShop  = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Machine_Shop);
 	int numStarport     = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Starport);
 	int numScienceFacility = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Science_Facility);
+	int numScienceVessel = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Science_Vessel);
 	int numMissileTurret = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret);
 
     if (Config::Strategy::StrategyName == "Terran_MarineRush")
@@ -274,6 +275,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
 			}
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Academy, 1));
 		}
 		
 		if (numArmory == 0)
@@ -283,6 +285,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 
 		if (numArmory > 0)
 		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Comsat_Station, numCC));
 			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Charon_Boosters) < 0)
 			{
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
@@ -309,14 +312,25 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Facility, 1));
 			}
 			if (numScienceFacility > 0){
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 2);
-				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 3)
-				{
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 3));
+				if (!numScienceVessel > 0){
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 1));
 				}
-				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 3)
+			
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) == 1)
 				{
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 3));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+				}
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 1)
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+				}				
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) == 2)
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+				}
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 2)
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
 				}
 				if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Irradiate) && BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg)
 				{

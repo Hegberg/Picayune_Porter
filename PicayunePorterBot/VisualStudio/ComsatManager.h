@@ -5,7 +5,7 @@
 
 namespace Picayune_Porter
 {
-	class DetectorManager : public MicroManager
+	class ComsatManager : public MicroManager
 	{
 
 		std::map<BWAPI::Unit, bool>	cloakedUnitMap;
@@ -16,8 +16,8 @@ namespace Picayune_Porter
 
 	public:
 
-		DetectorManager();
-		~DetectorManager() {}
+		ComsatManager();
+		~ComsatManager() {}
 
 		void setUnitClosestToEnemy(BWAPI::Unit unit) { unitClosestToEnemy = unit; }
 		void executeMicro(const BWAPI::Unitset & targets);

@@ -100,7 +100,7 @@ bool BuildingPlacer::canBuildHere(BWAPI::TilePosition position,const Building & 
 bool BuildingPlacer::tileBlocksAddon(BWAPI::TilePosition position) const
 {
 
-    for (int i=0; i<=2; ++i)
+    for (int i=0; i<=3; ++i)
     {
         for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(position.x - i,position.y))
         {
@@ -139,7 +139,7 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position,const Bu
         b.type==BWAPI::UnitTypes::Terran_Starport ||
         b.type==BWAPI::UnitTypes::Terran_Science_Facility)
     {
-        width += 2;
+        width += 3;
     }
 
     // define the rectangle of the building spot
@@ -383,26 +383,39 @@ bool BuildingPlacer::buildable(const Building & b,int x,int y) const
     BWAPI::TilePosition tp(x,y);
 
     //returns true if this tile is currently buildable, takes into account units on tile
+	//D'Arcy Hamilton - units do not block the building of Addons, except they do
     if (!BWAPI::Broodwar->isBuildable(x,y))
     {
+		if (b.type.isAddon()){
+			BWAPI::Broodwar->printf("addon builder1");
+		}
         return false;
     }
 
     if ((BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran) && tileBlocksAddon(BWAPI::TilePosition(x,y)))
     {
+		if (b.type.isAddon()){
+			BWAPI::Broodwar->printf("addon builder2");
+		}
         return false;
     }
 
     for (auto & unit : BWAPI::Broodwar->getUnitsOnTile(x,y))
     {
-        if ((b.builderUnit != nullptr) && (unit != b.builderUnit))
+		if ((b.builderUnit != nullptr) && ((unit != b.builderUnit) && !b.type.isAddon()))
         {
+			if (b.type.isAddon()){
+				BWAPI::Broodwar->printf("addon builder3");
+			}
             return false;
         }
     }
 
     if (!tp.isValid())
     {
+		if (b.type.isAddon()){
+			BWAPI::Broodwar->printf("addon builder4");
+		}
         return false;
     }
 

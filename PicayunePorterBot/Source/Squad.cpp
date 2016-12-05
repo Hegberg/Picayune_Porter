@@ -60,6 +60,9 @@ void Squad::update()
 		_medicManager.regroup(regroupPosition);
 		_marineManager.regroup(regroupPosition);
 		_vultureManager.regroup(regroupPosition);
+		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
+		_detectorManager.execute(_order);
+		
 	}
 	else // otherwise, execute micro
 	{
@@ -152,6 +155,7 @@ void Squad::addUnitsToMicroManagers()
 	BWAPI::Unitset medicUnits;
 	BWAPI::Unitset marineUnits;
 	BWAPI::Unitset vultureUnits;
+	BWAPI::Unitset comsatUnits;
 
 	// add _units to micro managers
 	for (auto & unit : _units)
@@ -175,7 +179,11 @@ void Squad::addUnitsToMicroManagers()
 			{
 				vultureUnits.insert(unit);
 			}
-			else if (unit->getType().isDetector() && !unit->getType().isBuilding())
+			else if (unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station)
+			{
+				comsatUnits.insert(unit);
+			}
+			else if ((unit->getType().isDetector() || unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel) && !unit->getType().isBuilding())
 			{
 				detectorUnits.insert(unit);
 			}
@@ -210,6 +218,8 @@ void Squad::addUnitsToMicroManagers()
 	_medicManager.setUnits(medicUnits);
 	_marineManager.setUnits(marineUnits);
 	_vultureManager.setUnits(vultureUnits);
+	_comsatUnits.setUnits(comsatUnits);
+	
 }
 
 // calculates whether or not to regroup
@@ -228,10 +238,15 @@ bool Squad::needsToRegroup()
 	}
 
 	BWAPI::Unit unitClosest = unitClosestToEnemy();
-
+	//added by D'Arcy Hamilton
 	if (!unitClosest)
 	{
 		_regroupStatus = std::string("\x04 No closest unit");
+		return false;
+	}
+
+	if (unitClosest->getType() == BWAPI::UnitTypes::Terran_Vulture)
+	{
 		return false;
 	}
 

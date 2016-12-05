@@ -1,10 +1,10 @@
-#include "DetectorManager.h"
+#include "ComsatManager.h"
 
 using namespace Picayune_Porter;
 
-DetectorManager::DetectorManager() : unitClosestToEnemy(nullptr) { }
+ComsatManager::ComsatManager() : unitClosestToEnemy(nullptr) { }
 
-void DetectorManager::executeMicro(const BWAPI::Unitset & targets) 
+void ComsatManager::executeMicro(const BWAPI::Unitset & targets)
 {
 	const BWAPI::Unitset & detectorUnits = getUnits();
 
@@ -21,50 +21,39 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	cloakedUnitMap.clear();
 	BWAPI::Unitset cloakedUnits;
 
-	// figure out targets
-	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-	{
-		// conditions for targeting
-		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||
-			unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar ||
-			unit->getType() == BWAPI::UnitTypes::Terran_Wraith ||
-			unit->getType() == BWAPI::UnitTypes::Terran_Ghost ||
-			unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
-			unit->getType() == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
-		{
-			cloakedUnits.insert(unit);
-			cloakedUnitMap[unit] = false;
-		}
-	}
-
-	bool detectorUnitInBattle = false;
 
 	// for each detectorUnit
 	for (auto & detectorUnit : detectorUnits)
 	{
 
 		BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-		Micro::SmartMove(detectorUnit, explorePosition);
+		if (detectorUnit->getEnergy > 150){
+			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, explorePosition);
+		}
+		if(detectorUnit->getEnergy > 50){
+			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, explorePosition);
+		}
+		
 		/*
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
-			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
-			detectorUnitInBattle = true;
+		Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+		detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
 		// send him to scout around the map
 		else
 		{
-			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-			Micro::SmartMove(detectorUnit, explorePosition);
+		BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
+		Micro::SmartMove(detectorUnit, explorePosition);
 		}
 		*/
 	}
 }
 
 
-BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
+BWAPI::Unit ComsatManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUnits, BWAPI::Unit detectorUnit)
 {
 	BWAPI::Unit closestCloaked = nullptr;
 	double closestDist = 100000;

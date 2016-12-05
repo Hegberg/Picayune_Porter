@@ -155,6 +155,7 @@
     <ClCompile Include="..\Source\VultureManager.cpp" />
     <ClCompile Include="..\source\WorkerData.cpp" />
     <ClCompile Include="..\source\WorkerManager.cpp" />
+    <ClCompile Include="ComsatManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\AutoObserver.h" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\Source\VultureManager.h" />
     <ClInclude Include="..\source\WorkerData.h" />
     <ClInclude Include="..\source\WorkerManager.h" />
+    <ClInclude Include="ComsatManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
