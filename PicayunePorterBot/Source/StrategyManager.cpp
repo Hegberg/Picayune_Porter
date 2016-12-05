@@ -258,16 +258,11 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 
 	else if (Config::Strategy::StrategyName == "Terran_Flash" || Config::Strategy::StrategyName == "Terran_FlashvProtoss")
 	{
-		if (BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
-		{
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, 8));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Bunker, 2));
-		}
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 2));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
-		if (numMarines < 4){
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, 4));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Bunker,  + 1));
+		if (numMarines < 8){
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Marine, 8));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Bunker,  2));
 		}
 		if (numVultures > 2)
 		{
