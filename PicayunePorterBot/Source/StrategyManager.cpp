@@ -273,6 +273,7 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 			{
 				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
 			}
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
 		}
 		
 		if (numArmory == 0)
@@ -308,13 +309,24 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Facility, 1));
 			}
 			if (numScienceFacility > 0){
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 2);
 				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 3)
 				{
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 3));
 				}
 				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 3)
 				{
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 3));
+				}
+				if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Irradiate) && BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Zerg)
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Irradiate, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Titan_Reactor, 1));
+				}
+				else if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::EMP_Shockwave) && BWAPI::Broodwar->enemy()->getRace() == BWAPI::Races::Protoss)
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::EMP_Shockwave, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Titan_Reactor, 1));
 				}
 			}
 		}
