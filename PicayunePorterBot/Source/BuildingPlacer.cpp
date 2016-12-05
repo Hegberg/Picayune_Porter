@@ -270,7 +270,7 @@ BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & 
 					dest = (*c)->getSides().second;
 				}
 				
-				double distance = abs( home.getDistance(dest) );
+				double distance = abs( home.getDistance(dest));
 				if (distance < closestDist) {
 					closestDist = distance;
 					closest = dest;

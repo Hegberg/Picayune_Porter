@@ -179,8 +179,8 @@ void Micro::SmartRightClick(BWAPI::Unit unit, BWAPI::Unit target)
         BWAPI::Broodwar->drawLineMap(unit->getPosition(), target->getPosition(), BWAPI::Colors::Cyan);
     }
 }
-
-void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
+//added by D'Arcy Hamilton and Chris Hegberg
+void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos, int mines)
 {
     if (!unit)
     {
@@ -189,18 +189,19 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos)
 
     if (!unit->canUseTech(BWAPI::TechTypes::Spider_Mines, pos))
     {
+		BWAPI::Broodwar->printf("vulture spidermines fail");
         return;
     }
 
     BWAPI::UnitCommand currentCommand(unit->getLastCommand());
 
     // if we've already told this unit to move to this position, ignore this command
-    if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Position) && (currentCommand.getTargetPosition() == pos))
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Position && (pos == currentCommand.getTargetPosition())))
     {
         return;
     }
 
-    unit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, pos);
+    unit->useTech(BWAPI::TechTypes::Spider_Mines, pos);
 }
 
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)

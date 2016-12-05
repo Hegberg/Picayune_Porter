@@ -207,6 +207,7 @@ void ProductionManager::manageBuildOrderQueue()
 			predictWorkerMovement(b);
 		}
 
+
 		// if we can make the current item
 		if (producer && canMake) 
 		{
@@ -250,9 +251,12 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
         PiPo_ASSERT(unit != nullptr, "Unit was null");
 
         // reasons a unit can not train the desired type
+		// D'Arcy Hamilton added tech/upgrade in progress handling
         if (unit->getType() != producerType)                    { continue; }
         if (!unit->isCompleted())                               { continue; }
         if (unit->isTraining())                                 { continue; }
+		if (unit->isResearching())								{ continue; }
+		if (unit->isUpgrading())								{ continue; }
         if (unit->isLifted())                                   { continue; }
         if (!unit->isPowered())                                 { continue; }
 

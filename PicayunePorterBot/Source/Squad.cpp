@@ -108,7 +108,8 @@ void Squad::setAllUnits()
 			unit->getHitPoints() > 0 &&
 			unit->exists() &&
 			unit->getPosition().isValid() &&
-			unit->getType() != BWAPI::UnitTypes::Unknown)
+			unit->getType() != BWAPI::UnitTypes::Unknown &&
+			unit->getType() != BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
 		{
 			goodUnits.insert(unit);
 		}
@@ -182,6 +183,11 @@ void Squad::addUnitsToMicroManagers()
 			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Shuttle || unit->getType() == BWAPI::UnitTypes::Terran_Dropship)
 			{
 				transportUnits.insert(unit);
+			}
+			// discard Spidermines
+			else if (unit->getType() == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
+			{
+
 			}
 			// select ranged _units
 			else if ((unit->getType().groundWeapon().maxRange() > 32) || (unit->getType() == BWAPI::UnitTypes::Protoss_Reaver) || (unit->getType() == BWAPI::UnitTypes::Zerg_Scourge))

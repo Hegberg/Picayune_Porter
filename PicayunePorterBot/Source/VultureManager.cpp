@@ -23,13 +23,8 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 
 	for (auto & rangedUnit : rangedUnits)
 	{
-		//if (rangedUnit->getSpiderMineCount() > 0){
-			//if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition())){
-				//BWAPI::Broodwar->printf("vulture spidermines -> true, %d", rangedUnit->getSpiderMineCount());
-				//rangedUnit->canUseTechPosition(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition());
-				//rangedUnit->useTech(BWAPI::TechTypes::Spider_Mines, BWAPI::Position(rangedUnit->getPosition().x -1, rangedUnit->getPosition().y -1));
-			//}
-		//}
+		//BWAPI::Broodwar->printf("vulture spidermines -> %d, %d", rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition()), rangedUnit->getSpiderMineCount());
+
 
 		// train sub units such as scarabs or interceptors
 		//trainSubUnits(rangedUnit);
@@ -49,8 +44,13 @@ void VultureManager::assignTargetsOld(const BWAPI::Unitset & targets)
 				}
 
 
+				if (rangedUnit->canUseTech(BWAPI::TechTypes::Spider_Mines, rangedUnit->getPosition())){//&& !(rangedUnit->getLastCommand().getType() == BWAPI::UnitCommandTypes::Use_Tech_Position)){
+					if (rangedUnit->getSpiderMineCount() > 0){
+						Micro::SmartLaySpiderMine(rangedUnit, rangedUnit->getPosition(), rangedUnit->getSpiderMineCount());
+					}
+				}
 				// attack it
-				if (Config::Micro::KiteWithRangedUnits)
+				else if (Config::Micro::KiteWithRangedUnits)
 				{
 					if (rangedUnit->getType() == BWAPI::UnitTypes::Zerg_Mutalisk || rangedUnit->getType() == BWAPI::UnitTypes::Terran_Vulture)
 					{
