@@ -260,6 +260,22 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
         if (unit->isLifted())                                   { continue; }
         if (!unit->isPowered())                                 { continue; }
 
+
+		//  Some units from the terran faction need to be built at a building that has an addon
+		//  Added by D'Arcy Hamilton
+		if (t.getUnitType() == BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode ||
+			t.getUnitType() == BWAPI::UnitTypes::Terran_Battlecruiser ||
+			t.getUnitType() == BWAPI::UnitTypes::Terran_Dropship ||
+			t.getUnitType() == BWAPI::UnitTypes::Terran_Science_Vessel ||
+			t.getUnitType() == BWAPI::UnitTypes::Terran_Valkyrie)
+		{
+				if (unit->getAddon() == nullptr)
+				{
+					continue;
+				}
+			
+		}
+
         // if the type is an addon, some special cases
         if (t.getUnitType().isAddon())
         {
@@ -313,6 +329,7 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
         }
         
         // if the type requires an addon and the producer doesn't have one
+		//whatever this is supposed to do, it doesn't work.
         typedef std::pair<BWAPI::UnitType, int> ReqPair;
         for (const ReqPair & pair : t.getUnitType().requiredUnits())
         {
