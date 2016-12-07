@@ -116,7 +116,8 @@ void GameCommander::handleUnitAssignments()
 	setValidUnits();
 
 	// set each type of unit
-	setScoutUnits();
+	//Chris Hegberg, stop early scouting since don't need it
+	//setScoutUnits();
 	setCombatUnits();
 }
 
