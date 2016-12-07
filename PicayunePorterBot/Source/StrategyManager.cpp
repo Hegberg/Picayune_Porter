@@ -44,7 +44,10 @@ const BuildOrder & StrategyManager::getOpeningBookBuildOrder() const
 const int StrategyManager::shouldExpandNow() const
 {
 	// if there is no place to expand to, we can't expand
-	if (MapTools::Instance().getNextExpansion() == BWAPI::TilePositions::None)
+	//Chris Hegberg, Fixing expansion bug
+	if (MapTools::Instance().getNextExpansion() == BWAPI::TilePositions::None || 
+		MapTools::Instance().getNextExpansion() == BWAPI::TilePositions::Invalid ||
+		MapTools::Instance().getNextExpansion() == BWAPI::TilePositions::Unknown)
 	{
 		BWAPI::Broodwar->printf("No valid expansion location");
 		return false;
@@ -67,10 +70,12 @@ const int StrategyManager::shouldExpandNow() const
 
 		// if we have a ridiculous stockpile of minerals, expand
 		// D'Arcy Hamilton - this is bad and leads to eternal build order inturrupts when there are no spots left
+		/*
 		if (BWAPI::Broodwar->self()->minerals() > 3000)
 		{
-			//return 2;
+			return 2;
 		}
+		*/
 
 		// we will make expansion N after array[N] minutes have passed
 		std::vector<int> expansionTimes = { 5, 10, 20, 30, 40, 50 };
@@ -275,14 +280,22 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 			}
 			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
 			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
+				//Chris Hegberg - Need this check because sometimes is queued when research already happening
+				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Tank_Siege_Mode)) && 
+					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Ion_Thrusters))) {
+					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
+				}
 			}
 			else  if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines))
 			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 4));
+				//Chris Hegberg - Need this check because sometimes is queued when research already happening
+				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Spider_Mines)) && 
+					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Charon_Boosters))){
+					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 4));
+				}
 			}
 			
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
@@ -362,10 +375,6 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
         BWAPI::Broodwar->printf("Warning: No build order goal for Terran Strategy: %s", Config::Strategy::StrategyName.c_str());
     }
 	
-
-	
-
-
 	if (shouldExpandNow() == 1)
     {
         goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Command_Center, numCC + 1));
