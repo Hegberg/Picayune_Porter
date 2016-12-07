@@ -7,7 +7,7 @@ namespace Config
     {
         bool ConfigFileFound                = false;
         bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "../BWAPI/Picayune_Porter/PicayunePorterBot/Picayune_Porter_Config.txt";
+		std::string ConfigFileLocation      = "./bwapi-data/AI/Picayune_Porter_Config.txt"; //"../BWAPI/Picayune_Porter/PicayunePorterBot/Picayune_Porter_Config.txt";
     }
 
     namespace Strategy
@@ -42,7 +42,7 @@ namespace Config
     namespace BotInfo
     {
         std::string BotName                 = "Picayune_Porter";
-        std::string Authors                 = "Chris Hegberg, D'Arcy Hamilton, Micheal Morris";
+        std::string Authors                 = "Chris Hegberg, D'Arcy Hamilton, Michael Morris";
         bool PrintInfoOnStart               = false;
     }
 
