@@ -468,7 +468,11 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
 	// get a position within our region
 	if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon || b.type == BWAPI::UnitTypes::Terran_Bunker 
-		|| b.type == BWAPI::UnitTypes::Terran_Missile_Turret || b.type == BWAPI::UnitTypes::Zerg_Creep_Colony)
+		||   b.type == BWAPI::UnitTypes::Zerg_Creep_Colony)
+	{
+		return BuildingPlacer::Instance().getBunkerBuildLocationNear(b, distance, false);
+	}
+	else if (b.type == BWAPI::UnitTypes::Terran_Missile_Turret)
 	{
 		return BuildingPlacer::Instance().getTurretBuildLocationNear(b, distance, false);
 	}

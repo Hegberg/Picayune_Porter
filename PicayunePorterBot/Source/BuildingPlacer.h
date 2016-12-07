@@ -43,8 +43,15 @@ public:
     BWAPI::TilePosition		getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly = false) const;
 
 	// Created by Micheal Morris and D'Arcy Hamilton.   
-	// Preferentially places turrets near chokepoints. Is not very clever.
+	// Preferentially places Bunkers near chokepoints. Is not very clever.
+	BWAPI::TilePosition     getBunkerBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const;
+
+	// Created by D'Arcy Hamilton.   
+	// Spreads out Missile Turrets to get a full anti stealth coverage
 	BWAPI::TilePosition     getTurretBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const;
+	// Created by D'Arcy Hamilton.  
+	// checks if a tile is within sight of a Missile Turret, minus a set amount
+	bool					isAreaMonitered(BWAPI::Position position, int bufferdist = 0) const;
 
     void					reserveTiles(BWAPI::TilePosition position,int width,int height);
     void					freeTiles(BWAPI::TilePosition position,int width,int height);

@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "BuildingPlacer.h"
 #include "MapGrid.h"
+#include "MapTools.h"
 
 using namespace Picayune_Porter;
 
@@ -237,11 +238,10 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 }
 
 // Created by Micheal Morris and D'Arcy Hamilton
-BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
+BWAPI::TilePosition BuildingPlacer::getBunkerBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
 {
     SparCraft::Timer t;
     t.start();
-
     // get the precomputed vector of tile positions which are sorted closes to this location
 
  
@@ -269,8 +269,8 @@ BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & 
 				else {
 					dest = (*c)->getSides().second;
 				}
-				
-				double distance = abs( home.getDistance(dest));
+
+				double distance = abs(MapTools::Instance().getGroundDistance(home, dest));
 				if (distance < closestDist) {
 					closestDist = distance;
 					closest = dest;
@@ -341,6 +341,79 @@ BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & 
     return  BWAPI::TilePositions::None;
 }
 
+
+BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const
+{
+	SparCraft::Timer t;
+	t.start();
+
+	// get the precomputed vector of tile positions which are sorted closes to this location
+
+	BWAPI::Unitset turrets;
+	for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret)
+		{
+			turrets.insert(unit);
+		}
+	}
+	int numTurrets = BWAPI::Broodwar->self()->completedUnitCount(b.type); 
+	BWAPI::TilePosition desiredPos(b.desiredPosition);
+	if (numTurrets == 0)
+	{
+		for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+		{
+			if (unit->getType() == BWAPI::UnitTypes::Terran_Bunker)
+			{
+				desiredPos = BWAPI::TilePosition(unit->getPosition());
+				continue;
+			}
+		}
+	}
+
+	const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(desiredPos));
+	double ms1 = t.getElapsedTimeInMilliSec();
+
+	// special easy case of having no pylons
+	int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
+	if (b.type.requiresPsi() && numPylons == 0) {
+		return BWAPI::TilePositions::None;
+	}
+
+	// iterate through the list until we've found a suitable location
+	for (size_t i(0); i < closestToBuilding.size(); ++i)
+	{
+		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly) && isAreaMonitered(BWAPI::Position(closestToBuilding[i]), turrets,0))
+		{
+			double ms = t.getElapsedTimeInMilliSec();
+			//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+
+			return closestToBuilding[i];
+		}
+	}
+	double ms = t.getElapsedTimeInMilliSec();
+	//BWAPI::Broodwar->printf("Turret Placer Took %lf ms", ms);
+
+	//  Todo: the BuildingManager can't handle a position of none, and will lock up. 
+	//  Thankfully its virtually impossible to get to this point
+	return  BWAPI::TilePositions::None;
+}
+
+
+bool BuildingPlacer::isAreaMonitered(BWAPI::Position position, BWAPI::Unitset turrets,  int bufferdist) const
+{
+	for (auto & unit : turrets)
+	{
+		if (unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret)
+		{
+			if (unit->getPosition().getDistance(position) < (352 - bufferdist*32))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
 bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile,BWAPI::UnitType type) const
 {
     // if it's a resource depot we don't care if it overlaps

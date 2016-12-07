@@ -308,16 +308,17 @@ BWAPI::Unit ProductionManager::getProducer(MetaType t, BWAPI::Position closestTo
                     // if the map won't let you build here, we can't build it
                     if (!BWAPI::Broodwar->isBuildable(tilePos))
                     {
+
                         isBlocked = true;
                         BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
                     }
 
                     // if there are any units on the addon tile, we can't build it -D'Arcy Hamilton not true
                     BWAPI::Unitset uot = BWAPI::Broodwar->getUnitsOnTile(tilePos.x, tilePos.y);
-                    if (uot.size() > 0 && !(uot.size() == 1 && *(uot.begin()) == unit))
+                    if ((uot.size() > 0 && !(uot.size() == 1 && *(uot.begin()) == unit)))
                     {
-                        //isBlocked = true;;
-                        BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
+                        //isBlocked = true;
+                        //BWAPI::Broodwar->drawBoxMap(tilePos.x*32, tilePos.y*32, tilePos.x*32 + 32, tilePos.y*32 + 32, BWAPI::Colors::Red);
                     }
                 }
             }

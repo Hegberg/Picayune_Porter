@@ -6,10 +6,11 @@ ComsatManager::ComsatManager() : unitClosestToEnemy(nullptr) { }
 
 void ComsatManager::executeMicro(const BWAPI::Unitset & targets)
 {
-	const BWAPI::Unitset & detectorUnits = getUnits();
+	const BWAPI::Unitset & comsatUnits = getUnits();
 
-	if (detectorUnits.empty())
+	if (comsatUnits.empty())
 	{
+		BWAPI::Broodwar->printf("Comsat don't exist");
 		return;
 	}
 
@@ -20,20 +21,34 @@ void ComsatManager::executeMicro(const BWAPI::Unitset & targets)
 
 	cloakedUnitMap.clear();
 	BWAPI::Unitset cloakedUnits;
-
-
-	// for each detectorUnit
-	for (auto & detectorUnit : detectorUnits)
+	// figure out targets
+	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
 	{
-		BWAPI::Broodwar->printf("Comsat test");
-		BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-		if (detectorUnit->getEnergy() > 50 && explore){
-			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, explorePosition);
-			explore = !explore;
+		// conditions for targeting
+		if (unit->getType() == BWAPI::UnitTypes::Zerg_Lurker ||
+			unit->getType() == BWAPI::UnitTypes::Protoss_Dark_Templar ||
+			unit->getType() == BWAPI::UnitTypes::Terran_Wraith ||
+			unit->getType() == BWAPI::UnitTypes::Terran_Ghost ||
+			unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
+			unit->getType() == BWAPI::UnitTypes::Terran_Vulture_Spider_Mine)
+		{
+			cloakedUnits.insert(unit);
+			cloakedUnitMap[unit] = false;
 		}
-		if (detectorUnit->getEnergy() > 50 && !explore){
+	}
+
+	for (auto & cloaked : cloakedUnits)
+	{
+		BWAPI::Broodwar->printf("cloaked %s at %d, %d  Cloaked: %d", cloaked->getType().toString(), cloaked->getPosition().x, cloaked->getPosition().y, cloaked->isCloaked());
+	}
+	// for each detectorUnit
+	for (auto & detectorUnit : comsatUnits)
+	{
+		unitClosestToEnemy = closestCloakedUnit(cloakedUnits, detectorUnit);
+		//BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
+		if (detectorUnit->getEnergy() == 50){
 			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, unitClosestToEnemy->getPosition());
-			explore = !explore;
+			BWAPI::Broodwar->drawCircle(BWAPI::CoordinateType::Map, unitClosestToEnemy->getPosition().x, unitClosestToEnemy->getPosition().y, 2000, BWAPI::Colors::Blue, true);
 		}
 		
 		/*

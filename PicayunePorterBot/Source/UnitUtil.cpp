@@ -10,16 +10,20 @@ bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
         return false;
     }
 
-    // no workers or buildings allowed
-    if (unit && unit->getType().isWorker() || unit->getType().isBuilding())
+    // no workers or buildings allowed, - D'Arcy Hamilton except buildings that are spellcasters
+	if (unit && unit->getType().isWorker() || (unit->getType().isBuilding() && !(unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station)))
     {
+		
         return false;
     }
 
     // check for various types of combat units
+	// Note that some units cast spells but have no attack
     if (unit->getType().canAttack() || 
         unit->getType() == BWAPI::UnitTypes::Terran_Medic ||
-        unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
+        unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel ||
+		unit->getType() == BWAPI::UnitTypes::Terran_Comsat_Station ||
+		unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar ||
         unit->getType() == BWAPI::UnitTypes::Protoss_Observer ||
         unit->isFlying() && unit->getType().spaceProvided() > 0)
     {

@@ -111,6 +111,9 @@ void Squad::setAllUnits()
 	BWAPI::Unitset goodUnits;
 	for (auto & unit : _units)
 	{
+
+
+
 		if (unit->isCompleted() &&
 			unit->getHitPoints() > 0 &&
 			unit->exists() &&

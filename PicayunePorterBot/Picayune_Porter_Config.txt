@@ -8,7 +8,7 @@
         
     "BWAPI" : 
     {
-        "SetLocalSpeed"             : 0,
+        "SetLocalSpeed"             : 10,
         "SetFrameSkip"              : 0,
         "UserInput"                 : true,
         "CompleteMapInformation"    : false
@@ -30,7 +30,7 @@
     "Macro" :
     {
         "BOSSFrameLimit"            : 160,
-        "WorkersPerRefinery"        : 3,
+        "WorkersPerRefinery"        : 2,
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
