@@ -1,6 +1,8 @@
 # Picayune_Porter
 Starcraft Broodwar AI
 
+This solution is made specifically to support development and deployment on the Windows platform only.
+
 Installation and Compilation Instructions
 1. Unzip all files into your BWAPI folder.  This should create the following directory structure:
 .../BWAPI/Picayune_Porter/PicayunePorterBot/Picayune_Porter_Config.txt
