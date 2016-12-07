@@ -30,7 +30,7 @@
     "Macro" :
     {
         "BOSSFrameLimit"            : 160,
-        "WorkersPerRefinery"        : 2,
+        "WorkersPerRefinery"        : 3,
         "BuildingSpacing"           : 1,
         "PylonSpacing"              : 3
     },
@@ -40,12 +40,12 @@
         "ErrorLogFilename"          : "bwapi-data/AI/Picayune_Porter_ErrorLog.txt",
         "LogAssertToErrorFile"      : false,
         
-        "DrawGameInfo"              : false,   
+        "DrawGameInfo"              : true,   
         "DrawUnitHealthBars"        : true,
         "DrawProductionInfo"        : true, 
-        "DrawBuildOrderSearchInfo"  : false,
+        "DrawBuildOrderSearchInfo"  : true,
         "DrawScoutInfo"             : false,
-        "DrawEnemyUnitInfo"         : false,
+        "DrawEnemyUnitInfo"         : true,
         "DrawModuleTimers"          : false,
         "DrawResourceInfo"          : false,
         "DrawCombatSimInfo"         : false,
@@ -56,7 +56,7 @@
         "DrawWorkerInfo"            : false,
         "DrawMouseCursorInfo"       : false,
         "DrawBuildingInfo"          : true,
-        "DrawReservedBuildingTiles" : false,
+        "DrawReservedBuildingTiles" : true,
         "DrawBOSSStateInfo"         : false,
         "PrintModuleTimeout"        : false
     },
@@ -80,7 +80,6 @@
     {
         
         "Terran"                    : "Terran_FlashvProtoss",
-        
         "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : false,
         

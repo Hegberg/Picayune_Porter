@@ -1,5 +1,7 @@
 #include "DetectorManager.h"
 
+//Implemented by D'Arcy Hamilton
+
 using namespace Picayune_Porter;
 
 DetectorManager::DetectorManager() : unitClosestToEnemy(nullptr) { }
@@ -37,29 +39,69 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 		}
 	}
 
+
+
 	bool detectorUnitInBattle = false;
 
 	// for each detectorUnit
 	for (auto & detectorUnit : detectorUnits)
 	{
-
-		BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-		Micro::SmartMove(detectorUnit, explorePosition);
-		/*
+		
 		// if we need to regroup, move the detectorUnit to that location
 		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
 		{
-			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+
+			BWAPI::UnitCommand currentCommand(detectorUnit->getLastCommand());
+
+			// if we've already told this unit to move to this position, ignore this command
+			if (detectorUnit->getEnergy() > 100)
+			{
+				if (detectorUnit->canUseTech(BWAPI::TechTypes::EMP_Shockwave, findClosestEMPTarget(targets, detectorUnit)))
+				{
+					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
+					{
+						detectorUnit->useTech(BWAPI::TechTypes::EMP_Shockwave, findClosestEMPTarget(targets, detectorUnit));
+					}
+				}
+			}
+			else if (detectorUnit->getEnergy() > 100)
+			{
+				if (detectorUnit->canUseTech(BWAPI::TechTypes::Irradiate, findClosestIrradiateTarget(targets, detectorUnit)))
+				{
+					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
+					{
+						detectorUnit->useTech(BWAPI::TechTypes::Irradiate, findClosestIrradiateTarget(targets, detectorUnit));
+					}
+				}
+			}
+			else if (detectorUnit->getEnergy() >= 200)
+			{
+				if (detectorUnit->canUseTech(BWAPI::TechTypes::Defensive_Matrix, unitClosestToEnemy))
+				{
+					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
+					{
+						detectorUnit->useTech(BWAPI::TechTypes::Defensive_Matrix, unitClosestToEnemy);
+					}
+				}
+			}
+
+			else
+			{
+				Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
+			}
+
+
 			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
 		// send him to scout around the map
 		else
 		{
-			BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
-			Micro::SmartMove(detectorUnit, explorePosition);
+			//BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
+			//Micro::SmartMove(detectorUnit, explorePosition);
+
 		}
-		*/
+		
 	}
 }
 
@@ -85,4 +127,69 @@ BWAPI::Unit DetectorManager::closestCloakedUnit(const BWAPI::Unitset & cloakedUn
 	}
 
 	return closestCloaked;
+}
+
+
+BWAPI::Unit  DetectorManager::findClosestEMPTarget(const BWAPI::Unitset & targets, BWAPI::Unit detectorUnit)
+{
+	int bestPriorityDistance = 1000000;
+	int bestPriority = 0;
+
+	double bestLTD = 0;
+
+	int highPriority = 0;
+	double closestDist = std::numeric_limits<double>::infinity();
+	BWAPI::Unit closestTarget = nullptr;
+
+	for (const auto & target : targets)
+	{
+		if (target->getType().getRace() == BWAPI::Races::Protoss)
+		{
+			continue;
+		}
+
+		double distance = detectorUnit->getDistance(target);
+		int priority = target->getShields();
+
+		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+		{
+			closestDist = distance;
+			highPriority = priority;
+			closestTarget = target;
+		}
+	}
+
+	return closestTarget;
+}
+
+BWAPI::Unit  DetectorManager::findClosestIrradiateTarget(const BWAPI::Unitset & targets, BWAPI::Unit detectorUnit)
+{
+	int bestPriorityDistance = 1000000;
+	int bestPriority = 0;
+
+	double bestLTD = 0;
+
+	int highPriority = 0;
+	double closestDist = std::numeric_limits<double>::infinity();
+	BWAPI::Unit closestTarget = nullptr;
+
+	for (const auto & target : targets)
+	{
+		if (!target->getType().isOrganic())
+		{
+			continue;
+		}
+
+		double distance = detectorUnit->getDistance(target);
+		int priority = target->getHitPoints();
+
+		if (!closestTarget || (priority > highPriority) || (priority == highPriority && distance < closestDist))
+		{
+			closestDist = distance;
+			highPriority = priority;
+			closestTarget = target;
+		}
+	}
+
+	return closestTarget;
 }

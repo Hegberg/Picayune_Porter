@@ -62,6 +62,15 @@ const int StrategyManager::shouldExpandNow() const
 	int minute = frame / (24 * 60);
 	if (numDepots < 6)
 	{
+		//added by D'Arcy Hamilton
+		//If the enemy has cloaked units, delay expansion until we have observers out so our army can fight back
+		if (InformationManager::Instance().enemyHasCloakedUnits())
+		{
+			if (!InformationManager::Instance().hasMobileDetector(BWAPI::Broodwar->self()))
+			{ 
+				return 0;
+			}
+		}
 		// if we have a ton of idle workers then we need a new expansion
 		if (WorkerManager::Instance().getNumIdleWorkers() > 10)
 		{
@@ -69,13 +78,10 @@ const int StrategyManager::shouldExpandNow() const
 		}
 
 		// if we have a ridiculous stockpile of minerals, expand
-		// D'Arcy Hamilton - this is bad and leads to eternal build order inturrupts when there are no spots left
-		/*
 		if (BWAPI::Broodwar->self()->minerals() > 3000)
 		{
 			return 2;
 		}
-		*/
 
 		// we will make expansion N after array[N] minutes have passed
 		std::vector<int> expansionTimes = { 5, 10, 20, 30, 40, 50 };
@@ -209,6 +215,8 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	// the goal to return
 	std::vector<MetaPair> goal;
 
+	int frame = BWAPI::Broodwar->getFrameCount();
+	int minute = frame / (24 * 60);
     int numWorkers      = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_SCV);
 	int numDepot		= UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Supply_Depot);
     int numCC           = UnitUtil::GetAllUnitCount(BWAPI::UnitTypes::Terran_Command_Center);            
@@ -266,103 +274,152 @@ const MetaPairVector StrategyManager::getTerranBuildOrderGoal() const
 	{
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 2));
 		goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, 4));
-		if (numVultures > 2)
+		if (BWAPI::Broodwar->self()->gas() < 200)
+		{
+			Config::Macro::WorkersPerRefinery = 3;
+		}
+		if (BWAPI::Broodwar->self()->gas() > BWAPI::Broodwar->self()->minerals())
+		{
+			Config::Macro::WorkersPerRefinery = 2;
+		}
+		//BWAPI::Broodwar->printf("enemy has cloaked: %d  Scives: %d", InformationManager::Instance().enemyHasCloakedUnits(), numScienceVessel);
+		if (numEngineeringBay > 0 && numMissileTurret <5)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Missile_Turret, numMissileTurret + 1));
+		}
+		if ((numVultures > 2) && !(InformationManager::Instance().enemyHasCloakedUnits() && numScienceVessel==0))
 		{
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 3));
-			if (numEngineeringBay > 0)
-			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Missile_Turret, numMissileTurret +2));
-			}
-			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
-			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Vulture, numVultures + 4));
-			}
-			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
+
+			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines))
 			{
 				//Chris Hegberg - Need this check because sometimes is queued when research already happening
-				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Tank_Siege_Mode)) && 
-					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Ion_Thrusters))) {
-					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
-				}
-			}
-			else  if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Spider_Mines))
-			{
-				//Chris Hegberg - Need this check because sometimes is queued when research already happening
-				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Spider_Mines)) && 
-					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Charon_Boosters))){
+				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Spider_Mines)) &&
+					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Ion_Thrusters)))
+				{
 					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Ion_Thrusters, 1));
 					goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 4));
 				}
 			}
-			
+			else if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
+			{
+				//Chris Hegberg - Need this check because sometimes is queued when research already happening
+				if ((!BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Tank_Siege_Mode)) &&
+					(!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Charon_Boosters)))
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+					//goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Charon_Boosters, 1));
+				}
+			}
+
 			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
-			
-		}
-		
-		if (numArmory == 0)
-		{
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Armory, 2));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Academy, 1));
+
 		}
 
-		if (numArmory > 0)
+		if ((numArmory == 0) && !(InformationManager::Instance().enemyHasCloakedUnits() && numScienceVessel==0))
 		{
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Comsat_Station, numCC));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath+2));
-			
-			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 0 && numGoliath == 0)
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Armory, 2));
+		}
+
+		if ((numArmory > 0) && !(InformationManager::Instance().enemyHasCloakedUnits() && numScienceVessel==0))
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Goliath, numGoliath + 4));
+
+			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 0)
 			{
-				//goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+				//Chris Hegberg - Need this check because sometimes is queued when research already happening
+				if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Plating)))
+				{
+					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+				}
 			}
 			if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) == 0 && numGoliath == 0)
 			{
-				//goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
-			}
-		}
-
-		if (BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
-		{
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Factory, 6));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode,  4));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, numTanks+2));
-			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Starport, 1));
-			
-			if (numStarport > 0)
-			{
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Facility, 1));
-				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Control_Tower, 1));
-			}
-			if (numScienceFacility > 0){
-
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Physics_Lab, 1));
-					if (numPhysicsLab)
-					{
-						goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Battlecruiser, numBattlecruiser+1));
-						goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Yamato_Gun, 1));
-						goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Colossus_Reactor, 1));
-					}
-
-				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) <3)
+				if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons)))
 				{
 					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
 				}
-				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) <3)
+			}
+		}
+
+		if ((BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode)) && !(InformationManager::Instance().enemyHasCloakedUnits() && numScienceVessel==0))
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, numTanks + 2));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Starport, 1));
+		}
+
+		if (InformationManager::Instance().enemyHasCloakedUnits() && numScienceVessel == 0)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Starport, 1));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Machine_Shop, numFactory));
+			
+		}
+		if (numStarport > 0)
+		{
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Facility, 1));
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Control_Tower, 1));
+			if (!BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode) && !BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Tank_Siege_Mode))
+			{ 
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Spider_Mines, 1));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Tank_Siege_Mode, 1));
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Siege_Tank_Tank_Mode, numTanks + 2));
+			}
+			
+		}
+		if (numScienceFacility > 0){
+
+
+			goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Terran_Science_Vessel, 2));
+
+			if (_enemyRace == BWAPI::Races::Zerg && !BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::Irradiate)
+				&& !BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Irradiate))
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::Irradiate, 1));
+			}
+			else if (_enemyRace == BWAPI::Races::Protoss && !BWAPI::Broodwar->self()->isResearching(BWAPI::TechTypes::EMP_Shockwave)
+				&& !BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::EMP_Shockwave))
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::TechTypes::EMP_Shockwave, 1));
+			}
+			else if (!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Titan_Reactor)
+				&& (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Titan_Reactor) == 0))
+			{
+				goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Titan_Reactor, 1));
+			}
+			if (BWAPI::Broodwar->self()->hasResearched(BWAPI::TechTypes::Tank_Siege_Mode))
+			{
+
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons) < 3)
 				{
-					goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
-				}				
-				if ((BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 3) && (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 3))
+					if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons)))
+					{
+						goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Weapons, 1));
+					}
+				}
+				if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) < 3)
+				{
+					if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Vehicle_Plating)))
+					{
+						goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Vehicle_Plating, 1));
+					}
+				}
+				if ((BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 3)
+					&& (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Vehicle_Plating) == 3))
 				{
 					if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Ship_Weapons) < 3)
 					{
-						goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Weapons, 1));
+						if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Ship_Weapons)))
+						{
+							goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Weapons, 1));
+						}
 					}
 					if (BWAPI::Broodwar->self()->getUpgradeLevel(BWAPI::UpgradeTypes::Terran_Ship_Plating) < 3)
 					{
-						goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Plating, 1));
+						if ((!BWAPI::Broodwar->self()->isUpgrading(BWAPI::UpgradeTypes::Terran_Ship_Plating)))
+						{
+							goal.push_back(std::pair<MetaType, int>(BWAPI::UpgradeTypes::Terran_Ship_Plating, 1));
+						}
 					}
 				}
 			}

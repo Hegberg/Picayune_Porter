@@ -89,6 +89,7 @@ int MapTools::getGroundDistance(BWAPI::Position origin,BWAPI::Position destinati
     // if we haven't yet computed the distance map to the destination
     if (_allMaps.find(destination) == _allMaps.end())
     {
+		//D'Arcy Hamilton, Michael Morris - The following four lines cause this function to return -1 as a distance for any query
         // if we have computed the opposite direction, we can use that too
         /*if (_allMaps.find(origin) != _allMaps.end())
         {

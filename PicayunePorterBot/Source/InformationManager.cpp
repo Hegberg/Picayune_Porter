@@ -503,11 +503,27 @@ bool InformationManager::isCombatUnit(BWAPI::UnitType type) const
 	if (type.canAttack() || 
 		type == BWAPI::UnitTypes::Terran_Medic || 
 		type == BWAPI::UnitTypes::Protoss_Observer ||
-        type == BWAPI::UnitTypes::Terran_Bunker)
+		type == BWAPI::UnitTypes::Terran_Bunker ||
+		type == BWAPI::UnitTypes::Terran_Science_Vessel)
 	{
 		return true;
 	}
 		
+	return false;
+}
+
+bool InformationManager::hasMobileDetector(BWAPI::Player player) const
+{
+	for (const auto & kv : getUnitData(player).getUnits())
+	{
+		const UnitInfo & ui(kv.second);
+		if (ui.type == BWAPI::UnitTypes::Terran_Science_Vessel
+			|| ui.type == BWAPI::UnitTypes::Zerg_Overlord
+			|| ui.type == BWAPI::UnitTypes::Protoss_Observer)
+		{
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -561,7 +577,7 @@ bool InformationManager::enemyHasCloakedUnits()
 	{
 		const UnitInfo & ui(kv.second);
 
-        if (ui.type.isCloakable())
+		if (ui.type.isCloakable() || ui.type.hasPermanentCloak())
         {
             return true;
         }

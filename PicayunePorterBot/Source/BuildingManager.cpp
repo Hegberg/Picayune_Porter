@@ -94,8 +94,12 @@ void BuildingManager::assignWorkersToUnassignedBuildings()
 			else
 			{
 				BWAPI::TilePosition testLocation = getBuildingLocation(b);
+		
+				//D'Arcy Hamilton - things that return an invalid location never get taken out of the build rotation? Lets try it.
 				if (!testLocation.isValid())
 				{
+					//BWAPI::Broodwar->printf("Invalid build of %s atlocation: %d, %d",b.type.toString(), testLocation.x, testLocation.y);
+					removeBuildings({ b });//
 					continue;
 				}
 
@@ -231,13 +235,17 @@ void BuildingManager::checkForStartedConstruction()
 void BuildingManager::checkForDeadTerranBuilders() 
 {///*
 	if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Terran){
+		std::vector<Building> toRemove;
 		for (auto & b : _buildings)
 		{
+			
 			if (b.status == BuildingStatus::UnderConstruction)
 			{
 				if (b.builderUnit->getHitPoints() < 1){
 					//BWAPI::Broodwar->printf("I think my builder died");
-					b.status = BuildingStatus::DeadWorker;
+					//b.status = BuildingStatus::DeadWorker;
+					toRemove.push_back(b);
+					b.buildingUnit->cancelConstruction();
 				}
 				else{
 					//BWAPI::Broodwar->printf("my builder lives!");
@@ -245,12 +253,18 @@ void BuildingManager::checkForDeadTerranBuilders()
 			}
 			if (b.status == BuildingStatus::Assigned)
 			{
+				
 				if (b.builderUnit->getHitPoints() < 1){
+					
+					toRemove.push_back(b);
+					
 					//BWAPI::Broodwar->printf("I think my builder died");
-					b.status = BuildingStatus::Unassigned;
+					//b.status = BuildingStatus::Unassigned;
+					//b.builderUnit = nullptr;
 				}
 			}
 		}
+		removeBuildings(toRemove);
 	}
 	//*/
 }
@@ -448,6 +462,7 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 
 	if (b.type.isRefinery())
 	{
+		
 		return BuildingPlacer::Instance().getRefineryPosition();
 	}
 

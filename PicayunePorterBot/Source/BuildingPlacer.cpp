@@ -263,12 +263,12 @@ BWAPI::TilePosition BuildingPlacer::getBunkerBuildLocationNear(const Building & 
 		for (std::set<BWTA::Region*>::const_iterator r = BWTA::getRegions().begin(); r != BWTA::getRegions().end(); r++)
 		{
 			for (std::set<BWTA::Chokepoint*>::const_iterator c = (*r)->getChokepoints().begin(); c != (*r)->getChokepoints().end(); c++) {
-				if (numTurrets > 2) {
-					return BuildingPlacer::Instance().getBuildLocationNear(b, buildDist, false);
-				}
-				else {
-					dest = (*c)->getSides().second;
-				}
+				//if (numTurrets > 2) {
+				//	return BuildingPlacer::Instance().getBuildLocationNear(b, buildDist, false);
+				//}
+				//else {
+					dest = (*c)->getCenter();
+				//}
 
 				double distance = abs(MapTools::Instance().getGroundDistance(home, dest));
 				if (distance < closestDist) {
@@ -370,7 +370,23 @@ BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & 
 			}
 		}
 	}
-
+	/*
+	if (numTurrets == 2)
+	{					
+		desiredPos = BWAPI::TilePosition(b.desiredPosition.x + 6, b.desiredPosition.y + 6);					
+	}
+	if (numTurrets == 3)
+	{
+		desiredPos = BWAPI::TilePosition(b.desiredPosition.x - 6, b.desiredPosition.y + 6);
+	}
+	if (numTurrets == 4)
+	{
+		desiredPos = BWAPI::TilePosition(b.desiredPosition.x - 6, b.desiredPosition.y - 6);
+	}
+	if (numTurrets == 5)
+	{
+		desiredPos = BWAPI::TilePosition(b.desiredPosition.x + 6, b.desiredPosition.y - 6);
+	}*/
 	const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(desiredPos));
 	double ms1 = t.getElapsedTimeInMilliSec();
 
@@ -381,12 +397,27 @@ BWAPI::TilePosition BuildingPlacer::getTurretBuildLocationNear(const Building & 
 	}
 
 	// iterate through the list until we've found a suitable location
+	// really, really slow. don't use past 10 turrets or so.
+	/*
+	if (numTurrets < 2)
+	{
+		for (size_t i(0); i < closestToBuilding.size(); ++i)
+		{
+			if (canBuildHereWithSpace(closestToBuilding[i], b, 0, horizontalOnly) && isAreaMonitered(BWAPI::Position(closestToBuilding[i]), turrets, 0))
+			{
+				double ms = t.getElapsedTimeInMilliSec();
+				//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+
+				return closestToBuilding[i];
+			}
+		}
+	}*/
 	for (size_t i(0); i < closestToBuilding.size(); ++i)
 	{
-		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly) && isAreaMonitered(BWAPI::Position(closestToBuilding[i]), turrets,0))
+		if (canBuildHereWithSpace(closestToBuilding[i], b, 0, horizontalOnly))
 		{
 			double ms = t.getElapsedTimeInMilliSec();
-			//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+			BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
 			return closestToBuilding[i];
 		}
@@ -406,7 +437,7 @@ bool BuildingPlacer::isAreaMonitered(BWAPI::Position position, BWAPI::Unitset tu
 	{
 		if (unit->getType() == BWAPI::UnitTypes::Terran_Missile_Turret)
 		{
-			if (unit->getPosition().getDistance(position) < (352 - bufferdist*32))
+			if (unit->getPosition().getApproxDistance(position) < (352 - bufferdist*32))
 			{
 				return false;
 			}

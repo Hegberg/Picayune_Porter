@@ -72,6 +72,7 @@ void ProductionManager::update()
 	// if they have cloaked units get a new goal asap
 	if (!_enemyCloakedDetected && InformationManager::Instance().enemyHasCloakedUnits())
 	{
+		_enemyCloakedDetected = true;
         if (BWAPI::Broodwar->self()->getRace() == BWAPI::Races::Protoss)
         {
 		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon) < 2)
@@ -89,14 +90,15 @@ void ProductionManager::update()
         {
             if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Missile_Turret) < 2)
 		    {
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
-			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
+				_queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Missile_Turret), true);
 		    }
 
 		    if (BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Terran_Engineering_Bay) == 0)
 		    {
 			    _queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Terran_Engineering_Bay), true);
+
 		    }
+
         }
         
         if (Config::Debug::DrawBuildOrderSearchInfo)
@@ -104,7 +106,7 @@ void ProductionManager::update()
 		    BWAPI::Broodwar->printf("Enemy Cloaked Unit Detected!");
         }
 
-		_enemyCloakedDetected = true;
+		
 	}
 }
 
@@ -156,6 +158,26 @@ void ProductionManager::manageBuildOrderQueue()
 			_queue.removeCurrentHighestPriorityItem();
 			break;
 		}
+		//D'Arcy Hamilton - if a tech is already researched, cull it
+		if (currentItem.metaType.isTech())
+		{
+			if (BWAPI::Broodwar->self()->hasResearched(currentItem.metaType.getTechType()))
+			{
+				_queue.removeCurrentHighestPriorityItem();
+				break;
+			}
+		}
+
+		//D'Arcy Hamilton - Don't build more of an upgrade than the max
+		if (currentItem.metaType.isUpgrade())
+		{
+			if (BWAPI::Broodwar->self()->getUpgradeLevel(currentItem.metaType.getUpgradeType()) == currentItem.metaType.getUpgradeType().maxRepeats())
+			{
+				_queue.removeCurrentHighestPriorityItem();
+				break;
+			}
+		}
+
 		//if we try to build too many addons remove it
 		//by D'Arcy Hamilton
 		if (BWAPI::Broodwar->self()->getRace() = BWAPI::Races::Terran)

@@ -48,7 +48,7 @@ void ComsatManager::executeMicro(const BWAPI::Unitset & targets)
 		//BWAPI::Position explorePosition = MapGrid::Instance().getLeastExplored();
 		if (detectorUnit->getEnergy() == 50){
 			detectorUnit->useTech(BWAPI::TechTypes::Scanner_Sweep, unitClosestToEnemy->getPosition());
-			BWAPI::Broodwar->drawCircle(BWAPI::CoordinateType::Map, unitClosestToEnemy->getPosition().x, unitClosestToEnemy->getPosition().y, 2000, BWAPI::Colors::Blue, true);
+			//BWAPI::Broodwar->drawCircle(BWAPI::CoordinateType::Map, unitClosestToEnemy->getPosition().x, unitClosestToEnemy->getPosition().y, 2000, BWAPI::Colors::Blue, true);
 		}
 		
 		/*

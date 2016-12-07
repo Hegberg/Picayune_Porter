@@ -61,7 +61,7 @@ void Squad::update()
 		_marineManager.regroup(regroupPosition);
 		_vultureManager.regroup(regroupPosition);
 		_detectorManager.setUnitClosestToEnemy(unitClosestToEnemy());
-		_detectorManager.execute(_order);
+		//_detectorManager.execute(_order);
 		_comsatManager.setUnitClosestToEnemy(unitClosestToEnemy());
 		_comsatManager.execute(_order);
 		
@@ -420,7 +420,8 @@ BWAPI::Unit Squad::unitClosestToEnemy()
 
 	for (auto & unit : _units)
 	{
-		if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer)
+		if (unit->getType() == BWAPI::UnitTypes::Protoss_Observer
+			|| unit->getType() == BWAPI::UnitTypes::Terran_Science_Vessel)
 		{
 			continue;
 		}

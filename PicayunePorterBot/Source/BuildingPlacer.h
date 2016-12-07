@@ -51,7 +51,7 @@ public:
 	BWAPI::TilePosition     getTurretBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const;
 	// Created by D'Arcy Hamilton.  
 	// checks if a tile is within sight of a Missile Turret, minus a set amount
-	bool					isAreaMonitered(BWAPI::Position position, int bufferdist = 0) const;
+	bool					isAreaMonitered(BWAPI::Position position, BWAPI::Unitset turrets, int bufferdist = 0) const;
 
     void					reserveTiles(BWAPI::TilePosition position,int width,int height);
     void					freeTiles(BWAPI::TilePosition position,int width,int height);
