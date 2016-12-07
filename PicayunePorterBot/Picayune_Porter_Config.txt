@@ -2,7 +2,7 @@
     "Bot Info" :
     {
         "BotName"                   : "Picayune_Porter",
-        "Authors"                   : "Chris Hegberg, D'Arcy Hamilton, Micheal Morris",
+        "Authors"                   : "Chris Hegberg, D'Arcy Hamilton, Michael Morris",
         "PrintInfoOnStart"          : true
     },
         
