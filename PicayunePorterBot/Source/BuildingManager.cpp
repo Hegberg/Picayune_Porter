@@ -481,7 +481,8 @@ BWAPI::TilePosition BuildingManager::getBuildingLocation(const Building & b)
 		distance = Config::Macro::PylonSpacing;
 	}
 
-	// get a position within our region
+	// D'Arcy Hamilton and Michael Morris
+	// get a position within our region, based on building type
 	if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon || b.type == BWAPI::UnitTypes::Terran_Bunker 
 		||   b.type == BWAPI::UnitTypes::Zerg_Creep_Colony)
 	{

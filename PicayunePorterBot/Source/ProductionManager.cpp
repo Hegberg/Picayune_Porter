@@ -168,7 +168,7 @@ void ProductionManager::manageBuildOrderQueue()
 			}
 		}
 
-		//D'Arcy Hamilton - Don't build more of an upgrade than the max
+		//D'Arcy Hamilton - Don't build more of an upgrade than the maximum
 		if (currentItem.metaType.isUpgrade())
 		{
 			if (BWAPI::Broodwar->self()->getUpgradeLevel(currentItem.metaType.getUpgradeType()) == currentItem.metaType.getUpgradeType().maxRepeats())

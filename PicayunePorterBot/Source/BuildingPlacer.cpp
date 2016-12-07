@@ -237,7 +237,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 		return  BWAPI::TilePositions::None;
 }
 
-// Created by Micheal Morris and D'Arcy Hamilton
+// Created by Michael Morris and D'Arcy Hamilton
 BWAPI::TilePosition BuildingPlacer::getBunkerBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly) const
 {
     SparCraft::Timer t;
