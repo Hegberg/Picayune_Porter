@@ -106,3 +106,8 @@ StrategyManager.cpp / StrategyManager.h
 UnitUtil.cpp / UnitUtil.h
 -------------------------------------------------------------------------------------------------------------------
 -bool UnitUtil::IsCombatUnit(BWAPI::Unit unit)
+
+-------------------------------------------------------------------------------------------------------------------
+DFBB_BuildOrderStackSearch.cpp / DFBB_BuildOrderStackSearch.h
+-------------------------------------------------------------------------------------------------------------------
+-void DFBB_BuildOrderStackSearch::DFBB()

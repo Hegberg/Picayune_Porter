@@ -245,7 +245,7 @@ SEARCH_BEGIN:
 		//Don't know why 2 works, 1 lags the game like usual, 
 		//removing the loop reduces the lag but causing bot to malfunction
 		//so no idea why but his 1 line of code is NEEDED BADLY for our bot to not lag and fucntion properly
-		//it also fixes other build order errors that we have been getting
+		//it also fixes other build order errors that we have been getting, again no idea why
 		REPETITIONS = 2;
 
         for (; COMPLETED_REPS < REPETITIONS; ++COMPLETED_REPS)
