@@ -238,11 +238,19 @@ SEARCH_BEGIN:
         REPETITIONS = getRepetitions(STATE, ACTION_TYPE);
         BOSS_ASSERT(REPETITIONS > 0, "Can't have zero repetitions!");
                 
-        // do the action as many times as legal to to 'repeat'
         CHILD_STATE = STATE;
         COMPLETED_REPS = 0;
+
+		//Chris Hegberg - Need to manually set this to 2 to reduce lag of searching for items in the queue
+		//Don't know why 2 works, 1 lags the game like usual, 
+		//removing the loop reduces the lag but causing bot to malfunction
+		//so no idea why but his 1 line of code is NEEDED BADLY for our bot to not lag and fucntion properly
+		//it also fixes other build order errors that we have been getting
+		REPETITIONS = 2;
+
         for (; COMPLETED_REPS < REPETITIONS; ++COMPLETED_REPS)
         {
+			
             if (CHILD_STATE.isLegal(ACTION_TYPE))
             {
                 _buildOrder.add(ACTION_TYPE);
@@ -252,6 +260,7 @@ SEARCH_BEGIN:
             {
                 break;
             }
+
         }
 
         if (_params.goal.isAchievedBy(CHILD_STATE))

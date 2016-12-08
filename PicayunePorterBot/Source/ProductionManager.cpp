@@ -55,7 +55,7 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->drawTextScreen(150, 10, "Nothing left to build, new search!");
         }
-
+		//this function
 		performBuildOrderSearch();
 	}
 
