@@ -47,50 +47,34 @@ void DetectorManager::executeMicro(const BWAPI::Unitset & targets)
 	for (auto & detectorUnit : detectorUnits)
 	{
 		
-		// if we need to regroup, move the detectorUnit to that location
-		if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
+		BWAPI::UnitCommand currentCommand(detectorUnit->getLastCommand());
+		if (detectorUnit->getEnergy() > 100)
 		{
+			if (detectorUnit->canUseTech(BWAPI::TechTypes::EMP_Shockwave, findClosestEMPTarget(targets, detectorUnit)))
+			{
+				Micro::SmartEMPShockwave(detectorUnit, findClosestEMPTarget(targets, detectorUnit), detectorUnit->getEnergy());
 
-			BWAPI::UnitCommand currentCommand(detectorUnit->getLastCommand());
-
+			}
+		}
+		else if (detectorUnit->getEnergy() > 100)
+		{
+			if (detectorUnit->canUseTech(BWAPI::TechTypes::Irradiate, findClosestIrradiateTarget(targets, detectorUnit)))
+			{
+				Micro::SmartIrradiate(detectorUnit, findClosestIrradiateTarget(targets, detectorUnit), detectorUnit->getEnergy());			
+			}
+		}
+		else if (detectorUnit->getEnergy() >= 200)
+		{
+			if (detectorUnit->canUseTech(BWAPI::TechTypes::Defensive_Matrix, unitClosestToEnemy))
+			{
+				Micro::SmartIrradiate(detectorUnit, unitClosestToEnemy, detectorUnit->getEnergy());
+			}
+		}
+		// if we need to regroup, move the detectorUnit to that location
+		else if (!detectorUnitInBattle && unitClosestToEnemy && unitClosestToEnemy->getPosition().isValid())
+		{
 			// if we've already told this unit to move to this position, ignore this command
-			if (detectorUnit->getEnergy() > 100)
-			{
-				if (detectorUnit->canUseTech(BWAPI::TechTypes::EMP_Shockwave, findClosestEMPTarget(targets, detectorUnit)))
-				{
-					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
-					{
-						detectorUnit->useTech(BWAPI::TechTypes::EMP_Shockwave, findClosestEMPTarget(targets, detectorUnit));
-					}
-				}
-			}
-			else if (detectorUnit->getEnergy() > 100)
-			{
-				if (detectorUnit->canUseTech(BWAPI::TechTypes::Irradiate, findClosestIrradiateTarget(targets, detectorUnit)))
-				{
-					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
-					{
-						detectorUnit->useTech(BWAPI::TechTypes::Irradiate, findClosestIrradiateTarget(targets, detectorUnit));
-					}
-				}
-			}
-			else if (detectorUnit->getEnergy() >= 200)
-			{
-				if (detectorUnit->canUseTech(BWAPI::TechTypes::Defensive_Matrix, unitClosestToEnemy))
-				{
-					if (!(currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit))
-					{
-						detectorUnit->useTech(BWAPI::TechTypes::Defensive_Matrix, unitClosestToEnemy);
-					}
-				}
-			}
-
-			else
-			{
-				Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
-			}
-
-
+			Micro::SmartMove(detectorUnit, unitClosestToEnemy->getPosition());
 			detectorUnitInBattle = true;
 		}
 		// otherwise there is no battle or no closest to enemy so we don't want our detectorUnit to die
