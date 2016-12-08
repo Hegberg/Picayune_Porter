@@ -40,23 +40,23 @@
         "ErrorLogFilename"          : "bwapi-data/AI/Picayune_Porter_ErrorLog.txt",
         "LogAssertToErrorFile"      : false,
         
-        "DrawGameInfo"              : true,   
-        "DrawUnitHealthBars"        : true,
-        "DrawProductionInfo"        : true, 
-        "DrawBuildOrderSearchInfo"  : true,
+        "DrawGameInfo"              : false,   
+        "DrawUnitHealthBars"        : false,
+        "DrawProductionInfo"        : false, 
+        "DrawBuildOrderSearchInfo"  : false, 
         "DrawScoutInfo"             : false,
-        "DrawEnemyUnitInfo"         : true,
+        "DrawEnemyUnitInfo"         : false, 
         "DrawModuleTimers"          : false,
         "DrawResourceInfo"          : false,
         "DrawCombatSimInfo"         : false,
-        "DrawUnitTargetInfo"        : true,
-        "DrawBWTAInfo"              : true,
+        "DrawUnitTargetInfo"        : false, 
+        "DrawBWTAInfo"              : false, 
         "DrawMapGrid"               : false,
         "DrawSquadInfo"             : false,
         "DrawWorkerInfo"            : false,
         "DrawMouseCursorInfo"       : false,
-        "DrawBuildingInfo"          : true,
-        "DrawReservedBuildingTiles" : true,
+        "DrawBuildingInfo"          : false, 
+        "DrawReservedBuildingTiles" : false, 
         "DrawBOSSStateInfo"         : false,
         "PrintModuleTimeout"        : false
     },
@@ -80,6 +80,7 @@
     {
         
         "Terran"                    : "Terran_FlashvProtoss",
+
         "ScoutGasSteal"             : false,
         "ScoutHarassEnemy"          : false,
         

@@ -42,7 +42,7 @@ public:
     // returns a build location near a building's desired location
     BWAPI::TilePosition		getBuildLocationNear(const Building & b,int buildDist,bool horizontalOnly = false) const;
 
-	// Created by Micheal Morris and D'Arcy Hamilton.   
+	// Created by Michael Morris and D'Arcy Hamilton.   
 	// Preferentially places Bunkers near chokepoints. Is not very clever.
 	BWAPI::TilePosition     getBunkerBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const;
 
