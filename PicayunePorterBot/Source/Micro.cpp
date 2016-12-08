@@ -189,6 +189,78 @@ void Micro::SmartLaySpiderMine(BWAPI::Unit unit, BWAPI::Position pos, int mines)
     unit->useTech(BWAPI::TechTypes::Spider_Mines, pos);
 }
 
+void Micro::SmartEMPShockwave(BWAPI::Unit unit, BWAPI::Unit enemy, int energy)
+{
+	if (!unit)
+	{
+		return;
+	}
+
+	if (!unit->canUseTech(BWAPI::TechTypes::EMP_Shockwave, enemy))
+	{
+		BWAPI::Broodwar->printf("emp failed");
+		return;
+	}
+
+	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+	// if we've already told this unit to move to this position, ignore this command
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit && (enemy == currentCommand.getTarget())))
+	{
+		return;
+	}
+
+	unit->useTech(BWAPI::TechTypes::EMP_Shockwave, enemy);
+}
+
+void Micro::SmartIrradiate(BWAPI::Unit unit, BWAPI::Unit enemy, int energy)
+{
+	if (!unit)
+	{
+		return;
+	}
+
+	if (!unit->canUseTech(BWAPI::TechTypes::Irradiate, enemy))
+	{
+		BWAPI::Broodwar->printf("Irradiate failed");
+		return;
+	}
+
+	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+	// if we've already told this unit to move to this position, ignore this command
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit && (enemy == currentCommand.getTarget())))
+	{
+		return;
+	}
+
+	unit->useTech(BWAPI::TechTypes::Irradiate, enemy);
+}
+
+void Micro::SmartDefensiveMatrix(BWAPI::Unit unit, BWAPI::Unit ally, int energy)
+{
+	if (!unit)
+	{
+		return;
+	}
+
+	if (!unit->canUseTech(BWAPI::TechTypes::Defensive_Matrix, ally))
+	{
+		BWAPI::Broodwar->printf("Defenseive Matrix failed");
+		return;
+	}
+
+	BWAPI::UnitCommand currentCommand(unit->getLastCommand());
+
+	// if we've already told this unit to move to this position, ignore this command
+	if ((currentCommand.getType() == BWAPI::UnitCommandTypes::Use_Tech_Unit && (ally == currentCommand.getTarget())))
+	{
+		return;
+	}
+
+	unit->useTech(BWAPI::TechTypes::Defensive_Matrix, ally);
+}
+
 void Micro::SmartRepair(BWAPI::Unit unit, BWAPI::Unit target)
 {
     PiPo_ASSERT(unit, "SmartRightClick: Unit not valid");
